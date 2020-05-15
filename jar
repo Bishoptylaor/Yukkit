@@ -4,5 +4,8 @@ set -ex
 
 ./init
 
-cd Paper
+pushd Paper
 ./paper jar
+popd
+
+cp -v Paper/paperclip.jar Yukkit.jar
