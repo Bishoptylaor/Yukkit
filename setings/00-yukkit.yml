@@ -1,0 +1,12 @@
+'eula.txt':
+  eula: true
+
+'server.properties':
+  view-distance: 7
+
+'bukkit.yml':
+  settings.world-container: worlds
+
+'paper.yml':
+  world-settings.default.max-auto-save-chunks-per-tick: 6
+  world-settings.default.hopper.disable-move-event: true
