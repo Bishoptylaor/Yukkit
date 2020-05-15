@@ -6,7 +6,7 @@ set -ex
 
 pushd Paper
 ./paper rebuild
-patches="$(git diff-index HEAD --name-only)"
+patches="$(git diff-index origin/ver/1.12.2 --name-only Spigot-Server-Patches)"
 popd
 
 rm -fv patches/*
