@@ -14,14 +14,13 @@ jobs:
           java-version: "8"
       - run: git config --global user.name "YukiLeafX"
       - run: git config --global user.email "yukileafx@gmail.com"
-      - run: chmod -c +x init patch jar
+      - run: chmod -c +x jar
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-build
           restore-keys: |
             ${{ runner.os }}-maven-build
-      - run: ./patch
       - run: ./jar
       - id: release
         uses: actions/create-release@v1
