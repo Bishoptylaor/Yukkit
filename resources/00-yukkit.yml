@@ -10,6 +10,9 @@
   settings.world-container: worlds
 
 'paper.yml':
+  settings.max-player-auto-save-per-tick: 2
   world-settings.default.max-auto-save-chunks-per-tick: 6
   world-settings.default.hopper.disable-move-event: true
   world-settings.default.prevent-moving-into-unloaded-chunks: true
+  world-settings.default.optimize-explosions: true
+  world-settings.default.queue-light-updates: true
