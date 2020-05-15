@@ -4,5 +4,10 @@ set -ex
 
 ./init
 
-cd Paper
+pushd Paper
 ./paper rebuild
+patches="$(git diff-index HEAD --name-only)"
+popd
+
+rm -fv patches/*
+echo "$patches" | xargs -I {} cp -v Paper/{} patches
