@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: "8"
-      - run: chmod +x jar
+      - run: chmod -c +x init jar
       - run: ./jar
       - id: release
         uses: actions/create-release@v1
