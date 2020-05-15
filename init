@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -ex
+
+if [ ! -d Paper ]; then
+  git clone https://github.com/PaperMC/Paper.git Paper
+fi
