@@ -1,6 +1,3 @@
-'eula.txt':
-  eula: true
-
 'server.properties':
   view-distance: 7
   max-players: 2020
