@@ -14,15 +14,22 @@ jobs:
           java-version: "8"
       - run: git config --global user.name "YukiLeafX"
       - run: git config --global user.email "yukileafx@gmail.com"
-      - run: chmod -c +x init jar
+      - run: chmod -c +x init patch jar
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-build
+          restore-keys: |
+            ${{ runner.os }}-maven-build
+      - run: ./patch
       - run: ./jar
       - id: release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: b${{ github.run_number }}
+          release_name: Release b${{ github.run_number }}
       - id: upload-jar
         uses: actions/upload-release-asset@v1
         env:
