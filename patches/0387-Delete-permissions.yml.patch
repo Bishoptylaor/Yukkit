@@ -1,0 +1,48 @@
+From e3a1a076d8753f5d69b5f2ed0f30350560ca6e88 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Sat, 16 May 2020 09:23:50 +0900
+Subject: [PATCH] Delete permissions.yml
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 7c82e18b9..1c72ebd35 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -828,33 +828,8 @@ public final class CraftServer implements Server {
+     @SuppressWarnings({ "unchecked", "finally" })
+     private void loadCustomPermissions() {
+         File file = new File(configuration.getString("settings.permissions-file"));
+-        FileInputStream stream;
+ 
+-        try {
+-            stream = new FileInputStream(file);
+-        } catch (FileNotFoundException ex) {
+-            try {
+-                file.createNewFile();
+-            } finally {
+-                return;
+-            }
+-        }
+-
+-        Map<String, Map<String, Object>> perms;
+-
+-        try {
+-            perms = (Map<String, Map<String, Object>>) yaml.load(stream);
+-        } catch (MarkedYAMLException ex) {
+-            getLogger().log(Level.WARNING, "Server permissions file " + file + " is not valid YAML: " + ex.toString());
+-            return;
+-        } catch (Throwable ex) {
+-            getLogger().log(Level.WARNING, "Server permissions file " + file + " is not valid YAML.", ex);
+-            return;
+-        } finally {
+-            try {
+-                stream.close();
+-            } catch (IOException ex) {}
+-        }
++        Map<String, Map<String, Object>> perms; // Yukkit - don't save permissions.yml & always empty permissions
+ 
+         if (perms == null) {
+             getLogger().log(Level.INFO, "Server permissions file " + file + " is empty, ignoring it");
+-- 
+2.26.2.windows.1
+
