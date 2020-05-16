@@ -1,4 +1,4 @@
-From b24df3faeaf1c4c9e99b1545be11b2f2fee5b720 Mon Sep 17 00:00:00 2001
+From 468c315b8245043a821806d2df221650b89c6db3 Mon Sep 17 00:00:00 2001
 From: YukiLeafX <yukileafx@gmail.com>
 Date: Sat, 16 May 2020 11:47:16 +0900
 Subject: [PATCH] Don't save configuration files
