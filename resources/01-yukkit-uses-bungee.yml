@@ -1,8 +1,0 @@
-'server.properties':
-  online-mode: false
-
-'bukkit.yml':
-  settings.connection-throttle: -1
-
-'spigot.yml':
-  settings.bungeecord: true

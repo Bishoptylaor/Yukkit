@@ -1,0 +1,44 @@
+From 7ef452098a9edfbdc1204235a5e85f97e6da2058 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Sat, 16 May 2020 18:41:05 +0900
+Subject: [PATCH] Add builtin settings
+
+
+diff --git a/src/main/resources/settings/yukkit-behind-bungee.yml b/src/main/resources/settings/yukkit-behind-bungee.yml
+new file mode 100644
+index 000000000..aefa3b190
+--- /dev/null
++++ b/src/main/resources/settings/yukkit-behind-bungee.yml
+@@ -0,0 +1,8 @@
++server-properties:
++  online-mode: false
++
++bukkit-yml:
++  settings.connection-throttle: -1
++
++spigot-yml:
++  settings.bungeecord: true
+diff --git a/src/main/resources/settings/yukkit.yml b/src/main/resources/settings/yukkit.yml
+new file mode 100644
+index 000000000..8125fd590
+--- /dev/null
++++ b/src/main/resources/settings/yukkit.yml
+@@ -0,0 +1,15 @@
++server-properties:
++  view-distance: 7
++  max-players: 2020
++  motd: '&7// &aYukkit&7 //\n&f&nUser friendly and flexible Paper fork.'
++
++bukkit-yml:
++  settings.world-container: worlds
++
++paper-yml:
++  settings.max-player-auto-save-per-tick: 2
++  world-settings.default.max-auto-save-chunks-per-tick: 6
++  world-settings.default.hopper.disable-move-event: true
++  world-settings.default.prevent-moving-into-unloaded-chunks: true
++  world-settings.default.optimize-explosions: true
++  world-settings.default.queue-light-updates: true
+-- 
+2.26.2.windows.1
+

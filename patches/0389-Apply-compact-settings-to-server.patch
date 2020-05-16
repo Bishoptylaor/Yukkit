@@ -1,0 +1,173 @@
+From cf91ad7f745b2f19db6a5c53829c6652213bea52 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Sat, 16 May 2020 18:45:49 +0900
+Subject: [PATCH] Apply compact settings to server
+
+
+diff --git a/src/main/java/io/github/yukileafx/YukkitConfig.java b/src/main/java/io/github/yukileafx/YukkitConfig.java
+new file mode 100644
+index 000000000..d19b70409
+--- /dev/null
++++ b/src/main/java/io/github/yukileafx/YukkitConfig.java
+@@ -0,0 +1,93 @@
++package io.github.yukileafx;
++
++import java.io.File;
++import java.io.IOException;
++import java.io.InputStream;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.util.Collections;
++import java.util.HashMap;
++import java.util.Map;
++import java.util.Properties;
++import java.util.logging.Logger;
++
++import com.google.common.io.Resources;
++
++import org.bukkit.configuration.file.YamlConfiguration;
++
++public class YukkitConfig {
++
++    private static final Map<String, YukkitConfig> SETTINGS;
++
++    static {
++        SETTINGS = new HashMap<>();
++        SETTINGS.put("server-properties", new YukkitConfig());
++        SETTINGS.put("bukkit-yml", new YukkitConfig());
++        SETTINGS.put("spigot-yml", new YukkitConfig());
++        SETTINGS.put("paper-yml", new YukkitConfig());
++        Collections.unmodifiableMap(SETTINGS);
++    }
++
++    public static YukkitConfig of(String id) {
++        return SETTINGS.get(id);
++    }
++
++    private static void copyResource(String name, Path path) {
++        if (!Files.isRegularFile(path)) {
++            try (InputStream in = Resources.getResource(name).openStream()) {
++                Files.copy(in, path);
++            } catch (IOException e) {
++                throw new RuntimeException(e);
++            }
++        }
++    }
++
++    public static void init() {
++        File dir = new File("settings");
++        dir.mkdirs();
++
++        Path yukkit = dir.toPath().resolve("00-yukkit.yml");
++        Path bungee = dir.toPath().resolve("01-yukkit-behind-bungee.yml");
++
++        copyResource("settings/yukkit.yml", yukkit);
++
++        if (Boolean.getBoolean("bungee")) {
++            copyResource("settings/yukkit-behind-bungee.yml", bungee);
++        }
++
++        try {
++            Files.list(dir.toPath()) //
++                    .map(path -> YamlConfiguration.loadConfiguration(path.toFile()))
++                    .forEach(yaml -> yaml.getKeys(false).stream() //
++                            .forEach(id -> {
++                                yaml.getConfigurationSection(id).getValues(true).entrySet().stream() //
++                                        .filter(entry -> entry.getKey() != null) //
++                                        .forEach(entry -> {
++                                            String key = entry.getKey();
++                                            Object value = entry.getValue();
++                                            of(id).contents.put(key, value);
++                                        });
++                            }));
++        } catch (IOException e) {
++            throw new RuntimeException(e);
++        }
++    }
++
++    public static void apply(String id, Properties prop) {
++        of(id).contents //
++                .forEach((key, value) -> {
++                    Logger.getLogger("Minecraft").info("Applying @" + id + ": " + key + " = " + value);
++                    prop.setProperty(key, value + "");
++                });
++    }
++
++    private final Map<String, Object> defaults = new HashMap<>();
++    private final Map<String, Object> contents = new HashMap<>();
++
++    protected YukkitConfig() {
++    }
++
++    public void addDefault(String key, Object value) {
++        defaults.putIfAbsent(key, value);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
+index 2d7308e5d..8e4edf4c7 100644
+--- a/src/main/java/net/minecraft/server/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/DedicatedServer.java
+@@ -155,6 +155,11 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+             this.r.b();
+             return false;
+         } else {
++            // Yukkit start
++            io.github.yukileafx.YukkitConfig.init();
++            io.github.yukileafx.YukkitConfig.apply("server-properties", propertyManager.properties);
++            // Yukkit end
++
+             if (this.R()) {
+                 this.c("127.0.0.1");
+             } else {
+diff --git a/src/main/java/net/minecraft/server/PropertyManager.java b/src/main/java/net/minecraft/server/PropertyManager.java
+index 8288f656f..b8b52037f 100644
+--- a/src/main/java/net/minecraft/server/PropertyManager.java
++++ b/src/main/java/net/minecraft/server/PropertyManager.java
+@@ -10,6 +10,8 @@ import org.apache.logging.log4j.Logger;
+ 
+ import joptsimple.OptionSet; // CraftBukkit
+ 
++import io.github.yukileafx.YukkitConfig; // Yukkit
++
+ public class PropertyManager {
+ 
+     private static final Logger a = LogManager.getLogger();
+@@ -99,6 +101,8 @@ public class PropertyManager {
+     }
+ 
+     public String getString(String s, String s1) {
++        YukkitConfig.of("server-properties").addDefault(s, s1); // Yukkit
++
+         if (!this.properties.containsKey(s)) {
+             this.properties.setProperty(s, s1);
+             this.savePropertiesFile();
+@@ -109,6 +113,8 @@ public class PropertyManager {
+     }
+ 
+     public int getInt(String s, int i) {
++        YukkitConfig.of("server-properties").addDefault(s, i); // Yukkit
++
+         try {
+             return getOverride(s, Integer.parseInt(this.getString(s, "" + i))); // CraftBukkit
+         } catch (Exception exception) {
+@@ -119,6 +125,8 @@ public class PropertyManager {
+     }
+ 
+     public long getLong(String s, long i) {
++        YukkitConfig.of("server-properties").addDefault(s, i); // Yukkit
++
+         try {
+             return getOverride(s, Long.parseLong(this.getString(s, "" + i))); // CraftBukkit
+         } catch (Exception exception) {
+@@ -129,6 +137,8 @@ public class PropertyManager {
+     }
+ 
+     public boolean getBoolean(String s, boolean flag) {
++        YukkitConfig.of("server-properties").addDefault(s, flag); // Yukkit
++
+         try {
+             return getOverride(s, Boolean.parseBoolean(this.getString(s, "" + flag))); //CraftBukkit
+         } catch (Exception exception) {
+-- 
+2.26.2.windows.1
+
