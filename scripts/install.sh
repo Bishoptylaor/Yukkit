@@ -45,19 +45,12 @@ top="$(pwd -P)"
       -o "$ver"-mapped.jar
   fi
 
-  if [ ! -d cb ]; then
-    cp -r "$top"/modules/CraftBukkit cb
-  fi
-
-  (
-    cd cb
-    mvn install:install-file \
-      -Dfile="$working"/"$ver"-mapped.jar \
-      -Dpackaging=jar \
-      -DgroupId=org.spigotmc \
-      -DartifactId=minecraft-server \
-      -Dversion="$ver"-SNAPSHOT
-  )
+  mvn install:install-file \
+    -Dfile="$working"/"$ver"-mapped.jar \
+    -Dpackaging=jar \
+    -DgroupId=org.spigotmc \
+    -DartifactId=minecraft-server \
+    -Dversion="$ver"-SNAPSHOT
 
   if [ ! -d nms ]; then
     mkdir -p nms
@@ -67,5 +60,9 @@ top="$(pwd -P)"
       java -jar "$working"/data/bin/fernflower.jar -dgs=1 -hdc=0 -asc=1 -udv=0 . .
       find . -type f -iname '*.class' -print0 | xargs -0 rm -f
     )
+  fi
+
+  if [ ! -d cb ]; then
+    cp -r "$top"/modules/CraftBukkit cb
   fi
 )
