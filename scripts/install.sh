@@ -69,12 +69,14 @@ top="$(pwd -P)"
   (
     cd cb
 
-    src=src/main/java
+    src='src/main/java'
 
     rm -rf $src/net/minecraft/server
-    cp -rT "$working"/nms $src
+    mkdir -p $src/net/minecraft/server
+
     find nms-patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | \
       xargs -0 -P 0 basename -z -s .patch | \
-      xargs -0 -P 0 -I {} /bin/bash -c "patch $src/net/minecraft/server/{}.java < nms-patches/{}.patch"
+      xargs -0 -P 0 -I {} /bin/bash -c \
+        "cp $working/nms/net/minecraft/server/{}.java $src/net/minecraft/server/{}.java && patch $src/net/minecraft/server/{}.java < nms-patches/{}.patch"
   )
 )
