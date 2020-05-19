@@ -4,6 +4,30 @@ init() {
   git submodule update --init
 }
 
+setup() {
+  init
+
+  mkdir -p work
+  rm -rf work/submods
+  cp -rf modules work/submods
+
+  pushd work
+
+  bd="$PWD"/submods/BuildData
+  ver=$(jq -r '.minecraftVersion' "$bd"/info.json)
+
+  if [ ! "$ver".jar ]; then
+    curl -o "$ver".jar "$(jq -r '.serverUrl' "$bd"/info.json)"
+    [ "$(md5sum "$ver".jar | cut -d ' ' -f 1)" = "$(jq -r '.minecraftHash' "$bd"/info.json)" ] || return
+  fi
+  [ -f "$ver"-class.jar ] || java -jar "$bd"/bin/SpecialSource-2.jar map -i "$ver".jar -m "$bd"/mappings/"$(jq -r '.classMappings' "$bd"/info.json)" -o "$ver"-class.jar
+  [ -f "$ver"-member.jar ] || java -jar "$bd"/bin/SpecialSource-2.jar map -i "$ver"-class.jar -m "$bd"/mappings/"$(jq -r '.memberMappings' "$bd"/info.json)" -o "$ver"-member.jar
+  [ -f "$ver"-mapped.jar ] || java -jar "$bd"/bin/SpecialSource.jar --kill-lvt -i "$ver"-member.jar --access-transformer "$bd"/mappings/"$(jq -r '.accessTransforms' "$bd"/info.json)" -m "$bd"/mappings/"$(jq -r '.packageMappings' "$bd"/info.json)" -o "$ver"-mapped.jar
+  mvn -f submods/CraftBukkit/pom.xml install:install-file -Dfile="$PWD"/"$ver"-mapped.jar -Dpackaging=jar -DgroupId=org.spigotmc -DartifactId=minecraft-server -Dversion="$ver"-SNAPSHOT
+
+  popd
+}
+
 clean() {
   if [ -f .gitmodules ]; then
     git submodule deinit --force --all
@@ -40,8 +64,8 @@ reinit() {
   git submodule status
 }
 
-if [ -z "$@" ] || [ "$1" = "help" ]; then
-  echo "$0 [ init | clean | reinit ]"
+if [ -z "$@" ] || [ "$1" = 'help' ]; then
+  echo "$0 [ init | setup | clean | reinit ]"
   exit 1
 fi
 
