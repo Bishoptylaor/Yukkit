@@ -5,8 +5,9 @@ set -ex
 scripts/init.sh
 
 mkdir -p work
-rm -rf work/submods
-cp -rf modules work/submods
+if [ ! -d work/submods ]; then
+  cp -rf modules work/submods
+fi
 
 (
   cd work
