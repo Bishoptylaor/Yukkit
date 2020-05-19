@@ -4,3 +4,15 @@
 [submodule "modules/CraftBukkit"]
 	path = modules/CraftBukkit
 	url = https://hub.spigotmc.org/stash/scm/spigot/craftbukkit.git
+[submodule "modules/BuildData"]
+	path = modules/BuildData
+	url = https://hub.spigotmc.org/stash/scm/spigot/builddata.git
+[submodule "modules/Spigot"]
+	path = modules/Spigot
+	url = https://hub.spigotmc.org/stash/scm/spigot/spigot.git
+[submodule "modules/Paperclip"]
+	path = modules/Paperclip
+	url = https://github.com/PaperMC/Paperclip.git
+[submodule "modules/Paper"]
+	path = modules/Paper
+	url = https://github.com/PaperMC/Paper.git
