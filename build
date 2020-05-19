@@ -1,0 +1,43 @@
+#!/bin/bash
+
+init() {
+  git submodule update --init
+}
+
+clean() {
+  if [ -f .gitmodules ]; then
+    git submodule deinit --force --all
+  fi
+
+  rm -rf .git/modules
+
+  rm -f .gitmodules
+  rm -rf modules
+
+  git rm --ignore-unmatch .gitmodules
+  git rm -r --ignore-unmatch modules
+}
+
+reinit() {
+  clean
+
+  touch .gitmodules
+  git submodule add https://hub.spigotmc.org/stash/scm/spigot/bukkit.git modules/Bukkit
+  git submodule add https://hub.spigotmc.org/stash/scm/spigot/craftbukkit.git modules/CraftBukkit
+  git submodule update --init --force
+
+  ( cd modules/Bukkit && git checkout 558fdf5f54b0f527cd48903daf9368ac4b862876 && git clean -d --force )
+  ( cd modules/CraftBukkit && git checkout acbc348e925cbdbae41b2055d60bbe40031d470c && git clean -d --force )
+  git add modules
+
+  git submodule status
+}
+
+if [ -z "$@" ] || [ "$1" = "help" ]; then
+  echo "$0 [ init | clean | reinit ]"
+  exit 1
+fi
+
+set -ex
+
+"$@"
