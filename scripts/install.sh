@@ -65,4 +65,17 @@ top="$(pwd -P)"
   if [ ! -d cb ]; then
     cp -r "$top"/modules/CraftBukkit cb
   fi
+
+  (
+    cd cb
+
+    src=src/main/java
+
+    rm -rf $src/net/minecraft/server
+    mkdir -p $src/minecraft/server
+    cp -rT "$working"/nms $src
+    find nms-patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | \
+      xargs -0 basename -z -s .patch | \
+      xargs -0 -I {} /bin/bash -c "patch $src/net/minecraft/server/{}.java < nms-patches/{}.patch"
+  )
 )
