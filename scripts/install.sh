@@ -35,12 +35,17 @@ if [ ! -f nms-"$ver"-mapped.jar ]; then
     -o nms-"$ver"-mapped.jar
 fi
 
-mvn install:install-file \
-  -Dfile="$working"/nms-"$ver"-mapped.jar \
-  -Dpackaging=jar \
-  -DgroupId=org.spigotmc \
-  -DartifactId=minecraft-server \
-  -Dversion="$ver"-SNAPSHOT
+(
+  mvntmp=$(mktemp -d)
+  mkdir -p $mvntmp
+  cd $mvntmp
+  mvn install:install-file \
+    -Dfile="$working"/nms-"$ver"-mapped.jar \
+    -Dpackaging=jar \
+    -DgroupId=org.spigotmc \
+    -DartifactId=minecraft-server \
+    -Dversion="$ver"-SNAPSHOT
+)
 
 if [ ! -d nms ]; then
   (
@@ -61,9 +66,14 @@ fi
   src='src/main/java'
   nmspkg='net/minecraft/server'
 
-  # *craftbukkit: NMS + CraftBukkit < nms-patches(CraftBukkit)
-  git branch -D craftbukkit || :
+  # *craftbukkit
   git switch -C craftbukkit
+  git switch --detach HEAD
+
+  # *cbnms: NMS + *craftbukkit < nms-patches(CraftBukkit)
+  git switch craftbukkit
+  git branch -D cbnms || :
+  git switch -C cbnms
 
   rm -rf $src/$nmspkg
   mkdir -p $src/$nmspkg
@@ -76,23 +86,20 @@ fi
   git add $src
   git commit --message="NMS + CraftBukkit < nms-patches(CraftBukkit) | $(date)" --author='YukiLeafX <yukileafx@gmail.com>'
 
-  git switch --detach HEAD^
+  git switch --detach craftbukkit
 
-  # *spigot: *craftbukkit < CraftBukkit-Patches(Spigot)
-  git switch craftbukkit
-
+  # *spigot: *cbnms < CraftBukkit-Patches(Spigot)
+  git switch cbnms
   git branch -D spigot || :
   git switch -C spigot
 
   find "$working"/modules/Spigot/CraftBukkit-patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | \
     xargs -0 git am --3way || git am --quit
 
-  git switch craftbukkit
-  git switch --detach HEAD^
+  git switch --detach craftbukkit
 
   # *paper: *spigot + mcdev imports < Spigot-Server-Patches(Paper)
   git switch spigot
-
   git branch -D paper || :
   git switch -C paper
 
@@ -196,9 +203,43 @@ fi
   find "$working"/modules/Paper/Spigot-Server-Patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | \
     xargs -0 git am --3way || git am --quit
 
-  git switch craftbukkit
-  git switch --detach HEAD^
+  git switch --detach craftbukkit
+
+  # *yukkit
+  git switch paper
+  git branch -D yukkit || :
+  git switch -C yukkit
+  git switch --detach craftbukkit
 )
 
-rm -rf server
-git clone --branch paper modules/CraftBukkit server
+(
+  cd modules/Bukkit
+
+  # *bukkit
+  git switch -C bukkit
+  git switch --detach HEAD
+
+  # *spigot-api: Bukkit < Bukkit-Patches(Spigot)
+  git switch bukkit
+  git branch -D spigot-api || :
+  git switch -C spigot-api
+  find "$working"/modules/Spigot/Bukkit-Patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | xargs -0 git am --3way || git am --quit
+  git switch --detach bukkit
+
+  # *paper-api: *spigot-api < Spigot-API-Patches(Paper)
+  git switch spigot-api
+  git branch -D paper-api || :
+  git switch -C paper-api
+  find "$working"/modules/Paper/Spigot-API-Patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | xargs -0 git am --3way || git am --quit
+  git switch --detach bukkit
+
+  # *yukkit-api
+  git switch paper-api
+  git branch -D yukkit-api || :
+  git switch -C yukkit-api
+  git switch --detach bukkit
+)
+
+rm -rf src
+git clone --branch paper modules/CraftBukkit src/server
+git clone --branch yukkit-api modules/Bukkit src/api

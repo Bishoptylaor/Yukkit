@@ -13,11 +13,11 @@ git submodule add https://github.com/PaperMC/Paperclip.git modules/Paperclip
 git submodule add https://github.com/PaperMC/Paper.git modules/Paper
 git submodule update --init --force
 
-( cd modules/Bukkit && git checkout 558fdf5f54b0f527cd48903daf9368ac4b862876 && git clean -d --force )
-( cd modules/CraftBukkit && git checkout acbc348e925cbdbae41b2055d60bbe40031d470c && git clean -d --force )
-( cd modules/BuildData && git checkout be360cc298a06b5355ecd057f5b1feb894a73f0f && git clean -d --force )
-( cd modules/Spigot && git checkout 79a30d7d26b9078dbf6071cbbfa060673bf117b2 && git clean -d --force )
-( cd modules/Paper && git checkout 77cce8236ff09d52730b66c7a146265ce3415185 && git clean -d --force )
+( cd modules/Bukkit && git switch --detach 558fdf5f54b0f527cd48903daf9368ac4b862876 )
+( cd modules/CraftBukkit && git switch --detach acbc348e925cbdbae41b2055d60bbe40031d470c )
+( cd modules/BuildData && git switch --detach be360cc298a06b5355ecd057f5b1feb894a73f0f )
+( cd modules/Spigot && git switch --detach 79a30d7d26b9078dbf6071cbbfa060673bf117b2 )
+( cd modules/Paper && git switch --detach 77cce8236ff09d52730b66c7a146265ce3415185 )
 git add modules
 
 git submodule status

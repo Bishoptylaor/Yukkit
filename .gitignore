@@ -1,3 +1,6 @@
 nms-*.jar
 nms
-server
+patches/server
+patches/api
+src/server
+src/api

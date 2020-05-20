@@ -7,7 +7,6 @@ if [ -f .gitmodules ]; then
 fi
 
 rm -rf .git/modules
-
 rm -f .gitmodules
 rm -rf modules
 

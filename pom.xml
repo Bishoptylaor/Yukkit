@@ -1,0 +1,15 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.github.yukileafx</groupId>
+  <artifactId>yukkit-parent</artifactId>
+  <version>dev-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Yukkit-Parent</name>
+
+  <modules>
+    <module>src/server</module>
+    <module>src/api</module>
+  </modules>
+</project>
