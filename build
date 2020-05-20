@@ -4,6 +4,8 @@ import os
 import fire
 import git
 import json
+import urllib.request
+import hashlib
 
 class Command():
     def init(self, clean=False, file='modules.json'):
@@ -16,21 +18,46 @@ class Command():
             s = f.read()
             j = json.loads(s)
 
-            for m in j:
-                print('Initializing', '>>', m['name'])
-                submod = repo.create_submodule(m['name'], m['path'], url=m['url'])
+        for m in j:
+            print('Initializing', '>>', m['name'])
+            submod = repo.create_submodule(m['name'], m['path'], url=m['url'])
 
-            print('Updating all submodules')
-            repo.git.submodule('update', '--init')
-            print('OK')
+        print('Updating all submodules')
+        repo.git.submodule('update', '--init')
+        print('OK')
 
-            for m in j:
-                submod = repo.submodules[m['name']]
-                submod.module().git.switch('--detach', m['commit'])
-                print(chr(int(0x2705)), 'HEAD is now', m['commit'], '@', m['name'])
+        for m in j:
+            submod = repo.submodules[m['name']]
+            submod.module().git.switch('--detach', m['commit'])
+            print(chr(0x2705), 'HEAD is now', m['commit'], '@', m['name'])
+
+    def vanilla_jar(self, info_file='modules/BuildData/info.json'):
+        with open(info_file, 'r') as f:
+            s = f.read()
+            j = json.loads(s)
+
+        ver = j['minecraftVersion']
+        url = j['serverUrl']
+        md5 = j['minecraftHash']
+        file = f'bin/vanilla-{ver}.jar'
+
+        if not os.path.isdir('bin'):
+            os.mkdir('bin')
+
+        if not os.path.isfile(file):
+            print('Downloading', '>>', url, '->', file)
+            urllib.request.urlretrieve(url, file)
+
+        with open(file, 'rb') as f:
+            s = f.read()
+            md5_jar = hashlib.md5(s).hexdigest()
+
+        assert md5 == md5_jar, f'{md5} != {md5_jar}'
+        print(chr(0x1f6e1), 'Vanilla jar hashes match.', f'({md5} == {md5_jar})')
 
     def install(self):
         self.init()
+        self.vanilla_jar()
 
 if __name__ == '__main__':
     repo = git.Repo(os.getcwd())
