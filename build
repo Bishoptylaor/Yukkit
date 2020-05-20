@@ -80,15 +80,18 @@ class Command():
 
         if not class_jar.is_file():
             print('Mapping', '>>', vanilla_jar, '<', cm, '->', class_jar)
-            subprocess.run(['java', '-jar', f'{data_dir}/bin/SpecialSource-2.jar', 'map', '--only', '.', '--only', 'net/minecraft', '--auto-lvt', 'BASIC', '--auto-member', 'SYNTHETIC', '-i', vanilla_jar, '-m', cm, '-o', class_jar], stderr=subprocess.STDOUT)
+            out = subprocess.run(['java', '-jar', f'{data_dir}/bin/SpecialSource-2.jar', 'map', '--only', '.', '--only', 'net/minecraft', '--auto-lvt', 'BASIC', '--auto-member', 'SYNTHETIC', '-i', vanilla_jar, '-m', cm, '-o', class_jar], capture_output=True, universal_newlines=True)
+            print(out.stdout)
 
         if not member_jar.is_file():
             print('Mapping', '>>', class_jar, '<', mm, '->', member_jar)
-            subprocess.run(['java', '-jar', f'{data_dir}/bin/SpecialSource-2.jar', 'map', '--only', '.', '--only', 'net/minecraft', '--auto-member', 'LOGGER', '--auto-member', 'TOKENS', '-i', class_jar, '-m', mm, '-o', member_jar], stderr=subprocess.STDOUT)
+            out = subprocess.run(['java', '-jar', f'{data_dir}/bin/SpecialSource-2.jar', 'map', '--only', '.', '--only', 'net/minecraft', '--auto-member', 'LOGGER', '--auto-member', 'TOKENS', '-i', class_jar, '-m', mm, '-o', member_jar], capture_output=True, universal_newlines=True)
+            print(out.stdout)
 
         if not jar.is_file():
             print('Mapping', '>>', member_jar, '<', pm, '&', at, '->', jar)
-            subprocess.run(['java', '-jar', f'{data_dir}/bin/SpecialSource.jar', 'map', '--only', '.', '--only', 'net/minecraft', '-i', member_jar, '--access-transformer', at, '-m', pm, '-o', jar], stderr=subprocess.STDOUT)
+            out = subprocess.run(['java', '-jar', f'{data_dir}/bin/SpecialSource.jar', 'map', '--only', '.', '--only', 'net/minecraft', '-i', member_jar, '--access-transformer', at, '-m', pm, '-o', jar], capture_output=True, universal_newlines=True)
+            print(out.stdout)
 
         submod.module().git.restore('--source', 'HEAD', '--', 'bin')
 
