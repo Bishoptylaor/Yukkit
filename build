@@ -1,8 +1,29 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-if [ -z "$1" ] || [ "$1" = help ]; then
-  echo "$0" [ "$(basename -z -s .sh scripts/*.sh | sed 's/\x0$//' | sed 's/\x0/ | /g')" ]
-  exit 1
-fi
+import os
+import fire
+import git
+import json
 
-scripts/"$1".sh
+def init(clean=False, file='modules.json'):
+    if clean:
+        for submod in repo.submodules:
+            print('Cleaning', '->', submod)
+            submod.remove(force=True)
+
+    with open(file, 'r') as f:
+        j = f.read()
+        for module in json.loads(j):
+            print('Initializing', '->', module['name'])
+            repo.create_submodule(module['name'], module['path'], url=module['url'])
+            repo.submodules[module['name']].module().git.switch('--detach', module['commit'])
+            print(chr(int(0x2705)), module['name'] + ':', 'HEAD is now', module['commit'])
+
+def install():
+    init()
+    print('//', 'TODO')
+
+if __name__ == '__main__':
+    repo = git.Repo(os.getcwd())
+    fire.Fire()
+    print('Done!')
