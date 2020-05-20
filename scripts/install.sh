@@ -100,6 +100,7 @@ reset_branch() {
   reset_branch spigot
 
   find "$working"/modules/Spigot/CraftBukkit-Patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | \
+    sort -z | \
     xargs -0 git am --3way
 
   git switch --detach craftbukkit
@@ -206,6 +207,7 @@ reset_branch() {
   git commit --message "*spigot + mcdev imports | $(date)"
 
   find "$working"/modules/Paper/Spigot-Server-Patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | \
+    sort -z | \
     xargs -0 git am --3way
 
   git switch --detach craftbukkit
@@ -226,13 +228,17 @@ reset_branch() {
   # *spigot-api: Bukkit < Bukkit-Patches(Spigot)
   git switch bukkit
   reset_branch spigot-api
-  find "$working"/modules/Spigot/Bukkit-Patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | xargs -0 git am --3way
+  find "$working"/modules/Spigot/Bukkit-Patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | \
+    sort -z | \
+    xargs -0 git am --3way
   git switch --detach bukkit
 
   # *paper-api: *spigot-api < Spigot-API-Patches(Paper)
   git switch spigot-api
   reset_branch paper-api
-  find "$working"/modules/Paper/Spigot-API-Patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | xargs -0 git am --3way
+  find "$working"/modules/Paper/Spigot-API-Patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | \
+    sort -z | \
+    xargs -0 git am --3way
   git switch --detach bukkit
 
   # *yukkit-api
