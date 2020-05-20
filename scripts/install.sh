@@ -4,80 +4,101 @@ set -ex
 
 scripts/init.sh
 
-top="$(pwd -P)"
+working="$(pwd -P)"
+ver=$(jq -r '.minecraftVersion' modules/BuildData/info.json)
+
+if [ ! -f nms-"$ver".jar ]; then
+  curl -o nms-"$ver".jar "$(jq -r '.serverUrl' modules/BuildData/info.json)"
+  [ "$(md5sum nms-"$ver".jar | cut -d ' ' -f 1)" = "$(jq -r '.minecraftHash' modules/BuildData/info.json)" ] || return
+fi
+
+if [ ! -f nms-"$ver"-class.jar ]; then
+  java -jar modules/BuildData/bin/SpecialSource-2.jar map \
+    -i nms-"$ver".jar \
+    -m modules/BuildData/mappings/"$(jq -r '.classMappings' modules/BuildData/info.json)" \
+    -o nms-"$ver"-class.jar
+fi
+
+if [ ! -f nms-"$ver"-member.jar ]; then
+  java -jar modules/BuildData/bin/SpecialSource-2.jar map \
+    -i nms-"$ver"-class.jar \
+    -m modules/BuildData/mappings/"$(jq -r '.memberMappings' modules/BuildData/info.json)" \
+    -o nms-"$ver"-member.jar
+fi
+
+if [ ! -f nms-"$ver"-mapped.jar ]; then
+  java -jar modules/BuildData/bin/SpecialSource.jar \
+    --kill-lvt \
+    -i nms-"$ver"-member.jar \
+    --access-transformer modules/BuildData/mappings/"$(jq -r '.accessTransforms' modules/BuildData/info.json)" \
+    -m modules/BuildData/mappings/"$(jq -r '.packageMappings' modules/BuildData/info.json)" \
+    -o nms-"$ver"-mapped.jar
+fi
+
+mvn install:install-file \
+  -Dfile="$working"/nms-"$ver"-mapped.jar \
+  -Dpackaging=jar \
+  -DgroupId=org.spigotmc \
+  -DartifactId=minecraft-server \
+  -Dversion="$ver"-SNAPSHOT
+
+if [ ! -d nms ]; then
+  (
+    mkdir -p nms/class
+    cd nms/class
+    jar -xf "$working"/nms-"$ver"-mapped.jar net/minecraft/server
+  )
+  (
+    mkdir -p nms/src
+    cd nms
+    java -jar "$working"/modules/BuildData/bin/fernflower.jar -dgs=1 -hdc=0 -asc=1 -udv=0 class src
+  )
+fi
 
 (
-  mkdir -p work
-  cd work
+  cd modules/CraftBukkit
 
-  if [ ! -d data ]; then
-    cp -r "$top"/modules/BuildData data
-  fi
+  # *craftbukkit: NMS + CraftBukkit < nms-patches(CraftBukkit)
+  git branch -D craftbukkit || :
+  git switch -C craftbukkit
 
-  working="$(pwd -P)"
-  ver=$(jq -r '.minecraftVersion' data/info.json)
+  src='src/main/java'
+  nmspkg='net/minecraft/server'
 
-  if [ ! -f "$ver".jar ]; then
-    curl -o "$ver".jar "$(jq -r '.serverUrl' data/info.json)"
-    [ "$(md5sum "$ver".jar | cut -d ' ' -f 1)" = "$(jq -r '.minecraftHash' data/info.json)" ] || return
-  fi
+  rm -rf $src/$nmspkg
+  mkdir -p $src/$nmspkg
 
-  if [ ! -f "$ver"-class.jar ]; then
-    java -jar data/bin/SpecialSource-2.jar map \
-      -i "$ver".jar \
-      -m data/mappings/"$(jq -r '.classMappings' data/info.json)" \
-      -o "$ver"-class.jar
-  fi
+  find nms-patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | \
+    xargs -0 -P 0 basename -z -s .patch | \
+    xargs -0 -P 0 -I {} /bin/bash -c \
+      "cp $working/nms/src/$nmspkg/{}.java $src/$nmspkg && patch $src/$nmspkg/{}.java < nms-patches/{}.patch"
 
-  if [ ! -f "$ver"-member.jar ]; then
-    java -jar data/bin/SpecialSource-2.jar map \
-      -i "$ver"-class.jar \
-      -m data/mappings/"$(jq -r '.memberMappings' data/info.json)" \
-      -o "$ver"-member.jar
-  fi
+  git add $src
+  git commit --message="NMS + CraftBukkit < nms-patches(CraftBukkit) | $(date)" --author='YukiLeafX <yukileafx@gmail.com>'
 
-  if [ ! -f "$ver"-mapped.jar ]; then
-    java -jar data/bin/SpecialSource.jar \
-      --kill-lvt \
-      -i "$ver"-member.jar \
-      --access-transformer data/mappings/"$(jq -r '.accessTransforms' data/info.json)" \
-      -m data/mappings/"$(jq -r '.packageMappings' data/info.json)" \
-      -o "$ver"-mapped.jar
-  fi
+  git switch --detach HEAD^
 
-  mvn install:install-file \
-    -Dfile="$working"/"$ver"-mapped.jar \
-    -Dpackaging=jar \
-    -DgroupId=org.spigotmc \
-    -DartifactId=minecraft-server \
-    -Dversion="$ver"-SNAPSHOT
+  # *spigot: *craftbukkit < CraftBukkit-Patches(Spigot)
+  git switch craftbukkit
 
-  if [ ! -d nms ]; then
-    mkdir -p nms
-    (
-      cd nms
-      jar -xf "$working"/"$ver"-mapped.jar net/minecraft/server
-      java -jar "$working"/data/bin/fernflower.jar -dgs=1 -hdc=0 -asc=1 -udv=0 . .
-      find . -type f -iname '*.class' -print0 | xargs -0 rm -f
-    )
-  fi
+  git branch -D spigot || :
+  git switch -C spigot
 
-  if [ ! -d cb ]; then
-    cp -r "$top"/modules/CraftBukkit cb
-  fi
+  find "$working"/modules/Spigot/CraftBukkit-patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | \
+    xargs -0 git am --3way || git am --quit
 
-  (
-    cd cb
+  git switch craftbukkit
+  git switch --detach HEAD^
 
-    src='src/main/java'
-    nms='net/minecraft/server'
+  # *paper: *spigot < Spigot-Server-Patches(Paper)
+  git switch spigot
 
-    rm -rf $src/$nms
-    mkdir -p $src/$nms
+  git branch -D paper || :
+  git switch -C paper
 
-    find nms-patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | \
-      xargs -0 -P 0 basename -z -s .patch | \
-      xargs -0 -P 0 -I {} /bin/bash -c \
-        "cp $working/nms/$nms/{}.java $src/$nms/{}.java && patch $src/$nms/{}.java < nms-patches/{}.patch"
-  )
+  find "$working"/modules/Paper/Spigot-Server-Patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | \
+    xargs -0 git am --3way || git am --quit
+
+  git switch craftbukkit
+  git switch --detach HEAD^
 )
