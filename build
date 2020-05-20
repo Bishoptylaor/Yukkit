@@ -44,9 +44,9 @@ class Command():
         ver = self.info()['minecraftVersion']
         url = self.info()['serverUrl']
         md5 = self.info()['minecraftHash']
-
         jar = pathlib.Path(f'{out_dir}/vanilla-{ver}.jar')
-        jar.parent.mkdir(parents=True, exist_ok=True)
+
+        pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
 
         if not jar.is_file():
             print('Downloading', '>>', url, '->', jar)
@@ -64,32 +64,33 @@ class Command():
 
     def nms_jar(self, out_dir='bin', data_dir='modules/BuildData'):
         vanilla_jar = self.vanilla_jar(get_path=True)
-
         ver = self.info()['minecraftVersion']
         at = f'{data_dir}/mappings/' + self.info()['accessTransforms']
         cm = f'{data_dir}/mappings/' + self.info()['classMappings']
         mm = f'{data_dir}/mappings/' + self.info()['memberMappings']
         pm = f'{data_dir}/mappings/' + self.info()['packageMappings']
-
         class_jar = pathlib.Path(f'{out_dir}/nms-{ver}-class.jar')
         member_jar = pathlib.Path(f'{out_dir}/nms-{ver}-member.jar')
         jar = pathlib.Path(f'{out_dir}/nms-{ver}.jar')
+        submod = self.repo.submodules[data_dir]
 
-        self.repo.submodules[data_dir].module().git.restore('--source', 'origin/master', '--', 'bin')
+        submod.module().git.restore('--source', 'origin/master', '--', 'bin')
+
+        pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
 
         if not class_jar.is_file():
             print('Mapping', '>>', vanilla_jar, '<', cm, '->', class_jar)
-            subprocess.check_call(['java', '-jar', f'{data_dir}/bin/SpecialSource-2.jar', 'map', '--only', '.', '--only', 'net/minecraft', '--auto-lvt', 'BASIC', '--auto-member', 'SYNTHETIC', '-i', vanilla_jar, '-m', cm, '-o', class_jar])
+            subprocess.run(['java', '-jar', f'{data_dir}/bin/SpecialSource-2.jar', 'map', '--only', '.', '--only', 'net/minecraft', '--auto-lvt', 'BASIC', '--auto-member', 'SYNTHETIC', '-i', vanilla_jar, '-m', cm, '-o', class_jar], stderr=subprocess.STDOUT)
 
         if not member_jar.is_file():
             print('Mapping', '>>', class_jar, '<', mm, '->', member_jar)
-            subprocess.check_call(['java', '-jar', f'{data_dir}/bin/SpecialSource-2.jar', 'map', '--only', '.', '--only', 'net/minecraft', '--auto-member', 'LOGGER', '--auto-member', 'TOKENS', '-i', class_jar, '-m', mm, '-o', member_jar])
+            subprocess.run(['java', '-jar', f'{data_dir}/bin/SpecialSource-2.jar', 'map', '--only', '.', '--only', 'net/minecraft', '--auto-member', 'LOGGER', '--auto-member', 'TOKENS', '-i', class_jar, '-m', mm, '-o', member_jar], stderr=subprocess.STDOUT)
 
         if not jar.is_file():
             print('Mapping', '>>', member_jar, '<', pm, '&', at, '->', jar)
-            subprocess.check_call(['java', '-jar', f'{data_dir}/bin/SpecialSource.jar', 'map', '--only', '.', '--only', 'net/minecraft', '-i', member_jar, '--access-transformer', at, '-m', pm, '-o', jar])
+            subprocess.run(['java', '-jar', f'{data_dir}/bin/SpecialSource.jar', 'map', '--only', '.', '--only', 'net/minecraft', '-i', member_jar, '--access-transformer', at, '-m', pm, '-o', jar], stderr=subprocess.STDOUT)
 
-        self.repo.submodules[data_dir].module().git.restore('--source', 'HEAD', '--', 'bin')
+        submod.module().git.restore('--source', 'HEAD', '--', 'bin')
 
     def install(self):
         self.init()
