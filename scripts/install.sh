@@ -4,9 +4,6 @@ set -ex
 
 scripts/init.sh
 
-git config --local user.name 'YukiLeafX'
-git config --local user.email 'yukileafx@gmail.com'
-
 working="$(pwd -P)"
 ver=$(jq -r '.minecraftVersion' modules/BuildData/info.json)
 
