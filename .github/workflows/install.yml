@@ -12,5 +12,5 @@ jobs:
       - { uses: actions/setup-java@v1, with: { java-version: 8 } }
       - { run: git config --global user.name 'Github Actions' }
       - { run: git config --global user.email 'actions@github.com' }
-      - { uses: actions/cache@v1, with: { path: ~/.m2/repository, key: ${{ runner.os }}-m2-install } }
+      - { uses: actions/cache@v1, with: { path: ~/.m2/repository, key: '${{ runner.os }}-m2-install' } }
       - { run: ./build install }
