@@ -5,34 +5,34 @@ import fire
 import git
 import json
 
-def init(clean=False, file='modules.json'):
-    if clean:
-        for submod in repo.submodules:
-            print('Cleaning', '>>', submod)
-            submod.remove(force=True)
+class Command():
+    def init(self, clean=False, file='modules.json'):
+        if clean:
+            for submod in repo.submodules:
+                print('Cleaning', '>>', submod)
+                submod.remove(force=True)
 
-    with open(file, 'r') as f:
-        s = f.read()
-        j = json.loads(s)
+        with open(file, 'r') as f:
+            s = f.read()
+            j = json.loads(s)
 
-        for m in j:
-            print('Initializing', '>>', m['name'])
-            submod = repo.create_submodule(m['name'], m['path'], url=m['url'])
+            for m in j:
+                print('Initializing', '>>', m['name'])
+                submod = repo.create_submodule(m['name'], m['path'], url=m['url'])
 
-        print('Updating all submodules')
-        repo.git.submodule('update', '--init')
-        print('OK')
+            print('Updating all submodules')
+            repo.git.submodule('update', '--init')
+            print('OK')
 
-        for m in j:
-            submod = repo.submodules[m['name']]
-            submod.module().git.switch('--detach', m['commit'])
-            print(chr(int(0x2705)), 'HEAD is now', m['commit'], '@', m['name'])
+            for m in j:
+                submod = repo.submodules[m['name']]
+                submod.module().git.switch('--detach', m['commit'])
+                print(chr(int(0x2705)), 'HEAD is now', m['commit'], '@', m['name'])
 
-def install():
-    init()
-    print('//', 'TODO')
+    def install(self):
+        self.init()
 
 if __name__ == '__main__':
     repo = git.Repo(os.getcwd())
-    fire.Fire()
+    fire.Fire(Command())
     print('Done!')
