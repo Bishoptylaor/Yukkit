@@ -58,12 +58,12 @@ fi
 (
   cd modules/CraftBukkit
 
+  src='src/main/java'
+  nmspkg='net/minecraft/server'
+
   # *craftbukkit: NMS + CraftBukkit < nms-patches(CraftBukkit)
   git branch -D craftbukkit || :
   git switch -C craftbukkit
-
-  src='src/main/java'
-  nmspkg='net/minecraft/server'
 
   rm -rf $src/$nmspkg
   mkdir -p $src/$nmspkg
@@ -71,7 +71,7 @@ fi
   find nms-patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | \
     xargs -0 -P 0 basename -z -s .patch | \
     xargs -0 -P 0 -I {} /bin/bash -c \
-      "cp $working/nms/src/$nmspkg/{}.java $src/$nmspkg && patch $src/$nmspkg/{}.java < nms-patches/{}.patch"
+      "cp -v $working/nms/src/$nmspkg/{}.java $src/$nmspkg && patch $src/$nmspkg/{}.java < nms-patches/{}.patch"
 
   git add $src
   git commit --message="NMS + CraftBukkit < nms-patches(CraftBukkit) | $(date)" --author='YukiLeafX <yukileafx@gmail.com>'
@@ -90,11 +90,108 @@ fi
   git switch craftbukkit
   git switch --detach HEAD^
 
-  # *paper: *spigot < Spigot-Server-Patches(Paper)
+  # *paper: *spigot + mcdev imports < Spigot-Server-Patches(Paper)
   git switch spigot
 
   git branch -D paper || :
   git switch -C paper
+
+  imports=(
+    AxisAlignedBB
+    BaseBlockPosition
+    BiomeBase
+    BlockBed
+    BiomeBigHills
+    BiomeJungle
+    BiomeMesa
+    BlockBeacon
+    BlockChest
+    BlockFalling
+    BlockFurnace
+    BlockIceFrost
+    BlockObserver
+    BlockPosition
+    BlockRedstoneComparator
+    BlockSnowBlock
+    BlockStateEnum
+    ChunkCache
+    ChunkCoordIntPair
+    ChunkProviderFlat
+    ChunkProviderGenerate
+    ChunkProviderHell
+    CombatTracker
+    CommandAbstract
+    CommandScoreboard
+    CommandWhitelist
+    ControllerJump
+    DataBits
+    DataConverterMaterialId
+    DataInspectorBlockEntity
+    DataPalette
+    DefinedStructure
+    DragonControllerLandedFlame
+    EnchantmentManager
+    Enchantments
+    EnderDragonBattle
+    EntityIllagerIllusioner
+    EntityLlama
+    EntitySquid
+    EntityTypes
+    EntityWaterAnimal
+    EntityWitch
+    EnumItemSlot
+    EULA
+    FileIOThread
+    IHopper
+    ItemBlock
+    ItemFireworks
+    ItemMonsterEgg
+    IRangedEntity
+    LegacyPingHandler
+    LotoSelectorEntry
+    NavigationAbstract
+    NBTTagCompound
+    NBTTagList
+    Packet
+    PacketEncoder
+    PacketPlayInUseEntity
+    PacketPlayOutMapChunk
+    PacketPlayOutPlayerListHeaderFooter
+    PacketPlayOutScoreboardTeam
+    PacketPlayOutTitle
+    PacketPlayOutUpdateTime
+    PacketPlayOutWindowItems
+    PathfinderAbstract
+    PathfinderGoal
+    PathfinderGoalFloat
+    PathfinderGoalGotoTarget
+    PathfinderWater
+    PersistentScoreboard
+    PersistentVillage
+    PlayerConnectionUtils
+    RegionFile
+    Registry
+    RegistryBlockID
+    RegistryMaterials
+    RemoteControlListener
+    RecipeBookServer
+    ServerPing
+    SoundEffect
+    StructureBoundingBox
+    StructurePiece
+    StructureStart
+    TileEntityEnderChest
+    TileEntityLootable
+    WorldGenStronghold
+    WorldProvider
+  )
+
+  echo "${imports[@]}" | \
+    tr ' ' '\n' | \
+    xargs -P 0 -I {} cp -nv "$working"/nms/src/$nmspkg/{}.java $src/$nmspkg
+
+  git add $src
+  git commit --message="*spigot + mcdev imports | $(date)" --author='YukiLeafX <yukileafx@gmail.com>'
 
   find "$working"/modules/Paper/Spigot-Server-Patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | \
     xargs -0 git am --3way || git am --quit
