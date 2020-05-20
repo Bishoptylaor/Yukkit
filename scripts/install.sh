@@ -9,7 +9,7 @@ ver=$(jq -r .minecraftVersion modules/BuildData/info.json)
 
 if [ ! -f nms-"$ver".jar ]; then
   curl -o nms-"$ver".jar "$(jq -r .serverUrl modules/BuildData/info.json)"
-  [ "$(md5sum nms-"$ver".jar | cut -d ' ' -f 1)" = "$(jq -r .minecraftHash modules/BuildData/info.json)" ] || return
+  [ "$(md5sum nms-"$ver".jar | cut -d ' ' -f 1)" = "$(jq -r .minecraftHash modules/BuildData/info.json)" ]
 fi
 
 if [ ! -f nms-"$ver"-class.jar ]; then
@@ -60,6 +60,14 @@ if [ ! -d nms ]; then
   )
 fi
 
+reset_branch() {
+  branch=$1
+  if [ "$(git branch --list "$branch")" ]; then
+    git branch -D "$branch"
+  fi
+  git switch -C "$branch"
+}
+
 (
   cd modules/CraftBukkit
 
@@ -72,8 +80,7 @@ fi
 
   # *cbnms: NMS + *craftbukkit < nms-patches(CraftBukkit)
   git switch craftbukkit
-  git branch -D cbnms || :
-  git switch -C cbnms
+  reset_branch cbnms
 
   rm -rf ${src:?}/$nmspkg
   mkdir -p $src/$nmspkg
@@ -90,18 +97,16 @@ fi
 
   # *spigot: *cbnms < CraftBukkit-Patches(Spigot)
   git switch cbnms
-  git branch -D spigot || :
-  git switch -C spigot
+  reset_branch spigot
 
-  find "$working"/modules/Spigot/CraftBukkit-patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | \
-    xargs -0 git am --3way || git am --quit
+  find "$working"/modules/Spigot/CraftBukkit-Patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | \
+    xargs -0 git am --3way
 
   git switch --detach craftbukkit
 
   # *paper: *spigot + mcdev imports < Spigot-Server-Patches(Paper)
   git switch spigot
-  git branch -D paper || :
-  git switch -C paper
+  reset_branch paper
 
   imports=(
     AxisAlignedBB
@@ -201,14 +206,13 @@ fi
   git commit --message "*spigot + mcdev imports | $(date)"
 
   find "$working"/modules/Paper/Spigot-Server-Patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | \
-    xargs -0 git am --3way || git am --quit
+    xargs -0 git am --3way
 
   git switch --detach craftbukkit
 
   # *yukkit
   git switch paper
-  git branch -D yukkit || :
-  git switch -C yukkit
+  reset_branch yukkit
   git switch --detach craftbukkit
 )
 
@@ -221,22 +225,19 @@ fi
 
   # *spigot-api: Bukkit < Bukkit-Patches(Spigot)
   git switch bukkit
-  git branch -D spigot-api || :
-  git switch -C spigot-api
-  find "$working"/modules/Spigot/Bukkit-Patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | xargs -0 git am --3way || git am --quit
+  reset_branch spigot-api
+  find "$working"/modules/Spigot/Bukkit-Patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | xargs -0 git am --3way
   git switch --detach bukkit
 
   # *paper-api: *spigot-api < Spigot-API-Patches(Paper)
   git switch spigot-api
-  git branch -D paper-api || :
-  git switch -C paper-api
-  find "$working"/modules/Paper/Spigot-API-Patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | xargs -0 git am --3way || git am --quit
+  reset_branch paper-api
+  find "$working"/modules/Paper/Spigot-API-Patches -mindepth 1 -maxdepth 1 -type f -iname '*'.patch -print0 | xargs -0 git am --3way
   git switch --detach bukkit
 
   # *yukkit-api
   git switch paper-api
-  git branch -D yukkit-api || :
-  git switch -C yukkit-api
+  reset_branch yukkit-api
   git switch --detach bukkit
 )
 

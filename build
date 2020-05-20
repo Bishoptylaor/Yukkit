@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ -z "$1" ] || [ "$1" = 'help' ]; then
-  echo "$0 [ $(basename -z -s .sh scripts/*.sh | sed 's/\x0$//' | sed 's/\x0/ | /g') ]"
+if [ -z "$1" ] || [ "$1" = help ]; then
+  echo "$0" [ "$(basename -z -s .sh scripts/*.sh | sed 's/\x0$//' | sed 's/\x0/ | /g')" ]
   exit 1
 fi
 
