@@ -6,6 +6,7 @@ import git
 import json
 import urllib.request
 import hashlib
+import pathlib
 
 class Command():
     def init(self, clean=False, file='modules.json'):
@@ -31,7 +32,7 @@ class Command():
             submod.module().git.switch('--detach', m['commit'])
             print(chr(0x2705), 'HEAD is now', m['commit'], '@', m['name'])
 
-    def vanilla_jar(self, info_file='modules/BuildData/info.json'):
+    def vanilla_jar(self, info_file='modules/BuildData/info.json', out_dir='bin'):
         with open(info_file, 'r') as f:
             s = f.read()
             j = json.loads(s)
@@ -39,10 +40,9 @@ class Command():
         ver = j['minecraftVersion']
         url = j['serverUrl']
         md5 = j['minecraftHash']
-        file = f'bin/vanilla-{ver}.jar'
 
-        if not os.path.isdir('bin'):
-            os.mkdir('bin')
+        file = pathlib.Path(f'{out_dir}/vanilla-{ver}.jar')
+        file.parent.mkdir(parents=True, exist_ok=True)
 
         if not os.path.isfile(file):
             print('Downloading', '>>', url, '->', file)
@@ -52,7 +52,7 @@ class Command():
             s = f.read()
             md5_jar = hashlib.md5(s).hexdigest()
 
-        assert md5 == md5_jar, f'{md5} != {md5_jar}'
+        assert md5 == md5_jar
         print(chr(0x1f6e1), 'Vanilla jar hashes match.', f'({md5} == {md5_jar})')
 
     def install(self):
