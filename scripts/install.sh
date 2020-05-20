@@ -37,8 +37,8 @@ fi
 
 (
   mvntmp=$(mktemp -d)
-  mkdir -p $mvntmp
-  cd $mvntmp
+  mkdir -p "$mvntmp"
+  cd "$mvntmp"
   mvn install:install-file \
     -Dfile="$working"/nms-"$ver"-mapped.jar \
     -Dpackaging=jar \
@@ -75,7 +75,7 @@ fi
   git branch -D cbnms || :
   git switch -C cbnms
 
-  rm -rf $src/$nmspkg
+  rm -rf ${src:?}/$nmspkg
   mkdir -p $src/$nmspkg
 
   find nms-patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | \
