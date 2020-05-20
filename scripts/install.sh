@@ -199,3 +199,6 @@ fi
   git switch craftbukkit
   git switch --detach HEAD^
 )
+
+rm -rf server
+git clone --branch paper modules/CraftBukkit server
