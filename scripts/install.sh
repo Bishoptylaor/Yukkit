@@ -4,6 +4,9 @@ set -ex
 
 scripts/init.sh
 
+git config --local user.name 'YukiLeafX'
+git config --local user.email 'yukileafx@gmail.com'
+
 working="$(pwd -P)"
 ver=$(jq -r '.minecraftVersion' modules/BuildData/info.json)
 
@@ -84,7 +87,7 @@ fi
       "cp -v $working/nms/src/$nmspkg/{}.java $src/$nmspkg && patch $src/$nmspkg/{}.java < nms-patches/{}.patch"
 
   git add $src
-  git commit --message="NMS + CraftBukkit < nms-patches(CraftBukkit) | $(date)" --author='YukiLeafX <yukileafx@gmail.com>'
+  git commit --message="NMS + CraftBukkit < nms-patches(CraftBukkit) | $(date)"
 
   git switch --detach craftbukkit
 
@@ -198,7 +201,7 @@ fi
     xargs -P 0 -I {} cp -nv "$working"/nms/src/$nmspkg/{}.java $src/$nmspkg
 
   git add $src
-  git commit --message="*spigot + mcdev imports | $(date)" --author='YukiLeafX <yukileafx@gmail.com>'
+  git commit --message="*spigot + mcdev imports | $(date)"
 
   find "$working"/modules/Paper/Spigot-Server-Patches -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | \
     xargs -0 git am --3way || git am --quit
