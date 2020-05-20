@@ -8,16 +8,17 @@ import json
 def init(clean=False, file='modules.json'):
     if clean:
         for submod in repo.submodules:
-            print('Cleaning', '->', submod)
+            print('Cleaning', '>>', submod)
             submod.remove(force=True)
 
     with open(file, 'r') as f:
         j = f.read()
-        for module in json.loads(j):
-            print('Initializing', '->', module['name'])
-            repo.create_submodule(module['name'], module['path'], url=module['url'])
-            repo.submodules[module['name']].module().git.switch('--detach', module['commit'])
-            print(chr(int(0x2705)), module['name'] + ':', 'HEAD is now', module['commit'])
+        for m in json.loads(j):
+            print('Initializing', '>>', m['name'])
+            submod = repo.create_submodule(m['name'], m['path'], url=m['url'])
+            submod.update()
+            submod.module().git.switch('--detach', m['commit'])
+            print(chr(int(0x2705)), 'HEAD is now', m['commit'], '@', m['name'])
 
 def install():
     init()

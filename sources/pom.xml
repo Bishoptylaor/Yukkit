@@ -9,7 +9,7 @@
   <name>Yukkit-Parent</name>
 
   <modules>
-    <module>src/server</module>
-    <module>src/api</module>
+    <module>server</module>
+    <module>api</module>
   </modules>
 </project>
