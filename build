@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 
-import os
 import fire
 import git
 import json
 import urllib.request
 import hashlib
 import pathlib
+import subprocess
 
 class Command():
+    def __init__(self):
+        self.repo = git.Repo('.')
+
     def init(self, clean=False, file='modules.json'):
         if clean:
-            for submod in repo.submodules:
+            for submod in self.repo.submodules:
                 print('Cleaning', '>>', submod)
                 submod.remove(force=True)
 
@@ -21,45 +24,77 @@ class Command():
 
         for m in j:
             print('Initializing', '>>', m['name'])
-            submod = repo.create_submodule(m['name'], m['path'], url=m['url'])
+            submod = self.repo.create_submodule(m['name'], m['path'], url=m['url'])
 
         print('Updating all submodules')
-        repo.git.submodule('update', '--init')
+        self.repo.git.submodule('update', '--init')
         print('OK')
 
         for m in j:
-            submod = repo.submodules[m['name']]
+            submod = self.repo.submodules[m['name']]
             submod.module().git.switch('--detach', m['commit'])
             print(chr(0x2705), 'HEAD is now', m['commit'], '@', m['name'])
 
-    def vanilla_jar(self, info_file='modules/BuildData/info.json', out_dir='bin'):
-        with open(info_file, 'r') as f:
+    def info(self, file='modules/BuildData/info.json'):
+        with open(file, 'r') as f:
             s = f.read()
-            j = json.loads(s)
+            return json.loads(s)
 
-        ver = j['minecraftVersion']
-        url = j['serverUrl']
-        md5 = j['minecraftHash']
+    def vanilla_jar(self, out_dir='bin', get_path=False):
+        ver = self.info()['minecraftVersion']
+        url = self.info()['serverUrl']
+        md5 = self.info()['minecraftHash']
 
-        file = pathlib.Path(f'{out_dir}/vanilla-{ver}.jar')
-        file.parent.mkdir(parents=True, exist_ok=True)
+        jar = pathlib.Path(f'{out_dir}/vanilla-{ver}.jar')
+        jar.parent.mkdir(parents=True, exist_ok=True)
 
-        if not os.path.isfile(file):
-            print('Downloading', '>>', url, '->', file)
-            urllib.request.urlretrieve(url, file)
+        if not jar.is_file():
+            print('Downloading', '>>', url, '->', jar)
+            urllib.request.urlretrieve(url, jar)
 
-        with open(file, 'rb') as f:
+        with open(jar, 'rb') as f:
             s = f.read()
             md5_jar = hashlib.md5(s).hexdigest()
 
         assert md5 == md5_jar
         print(chr(0x1f6e1), 'Vanilla jar hashes match.', f'({md5} == {md5_jar})')
 
+        if get_path:
+            return jar
+
+    def nms_jar(self, out_dir='bin', data_dir='modules/BuildData'):
+        vanilla_jar = self.vanilla_jar(get_path=True)
+
+        ver = self.info()['minecraftVersion']
+        at = f'{data_dir}/mappings/' + self.info()['accessTransforms']
+        cm = f'{data_dir}/mappings/' + self.info()['classMappings']
+        mm = f'{data_dir}/mappings/' + self.info()['memberMappings']
+        pm = f'{data_dir}/mappings/' + self.info()['packageMappings']
+
+        class_jar = pathlib.Path(f'{out_dir}/nms-{ver}-class.jar')
+        member_jar = pathlib.Path(f'{out_dir}/nms-{ver}-member.jar')
+        jar = pathlib.Path(f'{out_dir}/nms-{ver}.jar')
+
+        self.repo.submodules[data_dir].module().git.restore('--source', 'origin/master', '--', 'bin')
+
+        if not class_jar.is_file():
+            print('Mapping', '>>', vanilla_jar, '<', cm, '->', class_jar)
+            subprocess.call(f'java -jar {data_dir}/bin/SpecialSource-2.jar map --only . --only net/minecraft --auto-lvt BASIC --auto-member SYNTHETIC -i {vanilla_jar} -m {cm} -o {class_jar}')
+
+        if not member_jar.is_file():
+            print('Mapping', '>>', class_jar, '<', mm, '->', member_jar)
+            subprocess.call(f'java -jar {data_dir}/bin/SpecialSource-2.jar map --only . --only net/minecraft --auto-member LOGGER --auto-member TOKENS -i {class_jar} -m {mm} -o {member_jar}')
+
+        if not jar.is_file():
+            print('Mapping', '>>', member_jar, '<', pm, '&', at, '->', jar)
+            subprocess.call(f'java -jar {data_dir}/bin/SpecialSource.jar map --only . --only net/minecraft -i {member_jar} --access-transformer {at} -m {pm} -o {jar}')
+
+        self.repo.submodules[data_dir].module().git.restore('--source', 'HEAD', '--', 'bin')
+
     def install(self):
         self.init()
-        self.vanilla_jar()
+        self.nms_jar()
 
 if __name__ == '__main__':
-    repo = git.Repo(os.getcwd())
     fire.Fire(Command())
     print('Done!')
