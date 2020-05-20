@@ -12,11 +12,19 @@ def init(clean=False, file='modules.json'):
             submod.remove(force=True)
 
     with open(file, 'r') as f:
-        j = f.read()
-        for m in json.loads(j):
+        s = f.read()
+        j = json.loads(s)
+
+        for m in j:
             print('Initializing', '>>', m['name'])
             submod = repo.create_submodule(m['name'], m['path'], url=m['url'])
-            submod.update()
+
+        print('Updating all submodules')
+        repo.git.submodule('update', '--init')
+        print('OK')
+
+        for m in j:
+            submod = repo.submodules[m['name']]
             submod.module().git.switch('--detach', m['commit'])
             print(chr(int(0x2705)), 'HEAD is now', m['commit'], '@', m['name'])
 
