@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Sun, 24 May 2020 06:23:43 +0900
+Subject: [PATCH] Fast CraftBukkit NMS patches
+
+---
+ scripts/init.sh | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/scripts/init.sh b/scripts/init.sh
+index 3ef481b8..2dc0a0e5 100755
+--- a/scripts/init.sh
++++ b/scripts/init.sh
+@@ -21,8 +21,10 @@ cd "$workdir/CraftBukkit"
+ $gitcmd checkout -B patched HEAD >/dev/null 2>&1
+ rm -rf "$cb"
+ mkdir -p "$cb"
+-for file in $(ls nms-patches)
+-do
++
++function fast_nms_patch {
++    file=$(basename "$1")
++
+     patchFile="nms-patches/$file"
+     file="$(echo "$file" | cut -d. -f1).java"
+ 
+@@ -33,7 +35,10 @@ do
+ 
+     cp "$nms/$file" "$cb/$file"
+     "$patch" -s -d src/main/java/ "net/minecraft/server/$file" < "$patchFile"
+-done
++}
++export nms cb patch
++export -f fast_nms_patch
++find nms-patches -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 -P 0 -I {} /usr/bin/env bash -c 'fast_nms_patch {}'
+ 
+ $gitcmd add src
+ $gitcmd commit -m "CraftBukkit $ $(date)" --author="Auto <auto@mated.null>"
+-- 
+2.26.2.windows.1
+
