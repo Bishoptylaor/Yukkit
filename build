@@ -62,7 +62,7 @@ class Command():
             md5_jar = hashlib.md5(s).hexdigest()
 
         assert md5 == md5_jar
-        print(chr(0x1f6e1), 'Vanilla jar hashes match.', f'({md5} == {md5_jar})')
+        print(chr(0x1f6e1), jar, 'hashes match.', f'({md5} == {md5_jar})')
 
         return jar
 
@@ -82,10 +82,10 @@ class Command():
         ss_jar = self.data_dir / 'bin' / 'SpecialSource.jar'
         ss2_jar = self.data_dir / 'bin' / 'SpecialSource-2.jar'
 
+        out.mkdir(parents=True, exist_ok=True)
+
         submod = self.repo.submodules[self.data_submod_name]
         submod.module().git.restore('--source', 'origin/master', '--', 'bin')
-
-        out.mkdir(parents=True, exist_ok=True)
 
         if not class_jar.is_file():
             print('Mapping', '>>', vanilla_jar_file, '<', cm, '->', class_jar)
@@ -104,8 +104,35 @@ class Command():
 
         submod.module().git.restore('--source', 'HEAD', '--', 'bin')
 
+        return jar
+
     def decompile_nms_jar(self, nms_jar_file, class_out_dir='bin', src_out_dir='src'):
+        jar = pathlib.Path(nms_jar_file)
+
         ver = self.info()['minecraftVersion']
+
+        class_out = pathlib.Path(class_out_dir) / f'nms-{ver}'
+        src_out = pathlib.Path(src_out_dir) / f'nms-{ver}'
+        ff_jar = self.data_dir / 'bin' / 'fernflower.jar'
+
+        if not class_out.is_dir():
+            print('Extracting', '>>', jar, '->', class_out)
+            class_out.mkdir(parents=True, exist_ok=True)
+            subprocess.run(['jar', 'xvf', jar.resolve(), 'net/minecraft'], check=True, cwd=class_out)
+        print(chr(0x1f4e6), class_out, 'found.')
+
+        submod = self.repo.submodules[self.data_submod_name]
+        submod.module().git.restore('--source', 'origin/master', '--', 'bin')
+
+        if not src_out.is_dir():
+            print('Decompiling', '>>', class_out, '->', src_out)
+            src_out.mkdir(parents=True, exist_ok=True)
+            subprocess.run(['java', '-jar', ff_jar, '-dgs=1', '-hdc=0', '-asc=1', '-udv=0', class_out, src_out], check=True)
+        print(chr(0x1f4e6), src_out, 'found.')
+
+        submod.module().git.restore('--source', 'HEAD', '--', 'bin')
+
+        return src_out
 
     def install(self):
         self.init()
