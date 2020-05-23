@@ -35,13 +35,13 @@ class Command():
             submod.module().git.switch('--detach', m['commit'])
             print(chr(0x2705), 'HEAD is now', m['commit'], '@', m['name'])
 
-    def install(self, out_dir='bin', nms_out_dir='nms-decompile'):
+    def install(self, bin_out_dir='bin', nms_out_dir='nms-decompile'):
         self.init()
 
         builddata = self.repo.submodule('modules/BuildData')
-        builddata_dir = pathlib.Path(builddata.module().working_tree_dir)
+        builddata_dir = pathlib.Path(builddata.path)
 
-        out = pathlib.Path(out_dir)
+        bin_out = pathlib.Path(bin_out_dir)
         nms_out = pathlib.Path(nms_out_dir)
 
         with open(builddata_dir / 'info.json', 'r') as f:
@@ -60,14 +60,14 @@ class Command():
         ss_jar = builddata_dir / 'bin' / 'SpecialSource.jar'
         ss2_jar = builddata_dir / 'bin' / 'SpecialSource-2.jar'
         ff_jar = builddata_dir / 'bin' / 'fernflower.jar'
-        vanilla_jar = out / f'vanilla-{ver}.jar'
-        class_jar = out / f'nms-{ver}-class.jar'
-        member_jar = out / f'nms-{ver}-member.jar'
-        nms_jar = out / f'nms-{ver}.jar'
+        vanilla_jar = bin_out / f'vanilla-{ver}.jar'
+        class_jar = bin_out / f'nms-{ver}-class.jar'
+        member_jar = bin_out / f'nms-{ver}-member.jar'
+        nms_jar = bin_out / f'nms-{ver}.jar'
         nms_class_out = nms_out / f'{ver}-bin'
         nms_src_out = nms_out / f'{ver}-src'
 
-        out.mkdir(parents=True, exist_ok=True)
+        bin_out.mkdir(parents=True, exist_ok=True)
         nms_out.mkdir(parents=True, exist_ok=True)
 
         if not vanilla_jar.is_file():
