@@ -106,14 +106,17 @@ class Command():
 
         return jar
 
-    def decompile_nms_jar(self, nms_jar_file, class_out_dir='bin', src_out_dir='src'):
+    def decompile_nms_jar(self, nms_jar_file, out_dir='nms-decompile'):
         jar = pathlib.Path(nms_jar_file)
+        out = pathlib.Path(out_dir)
 
         ver = self.info()['minecraftVersion']
 
-        class_out = pathlib.Path(class_out_dir) / f'nms-{ver}'
-        src_out = pathlib.Path(src_out_dir) / f'nms-{ver}'
+        class_out = out / f'{ver}-bin'
+        src_out = out / f'{ver}-src'
         ff_jar = self.data_dir / 'bin' / 'fernflower.jar'
+
+        out.mkdir(parents=True, exist_ok=True)
 
         if not class_out.is_dir():
             print('Extracting', '>>', jar, '->', class_out)
