@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Sun, 24 May 2020 08:41:50 +0900
+Subject: [PATCH] Apply Yukkit patches
+
+
+diff --git a/scripts/applyPatches.sh b/scripts/applyPatches.sh
+index 14228112..8ab8f561 100755
+--- a/scripts/applyPatches.sh
++++ b/scripts/applyPatches.sh
+@@ -16,6 +16,7 @@ function applyPatch {
+     what_name=$(basename "$what")
+     target=$2
+     branch=$3
++    patchdir=${4:-"$basedir/${what_name}-Patches"}
+ 
+     cd "$basedir/$what"
+     $gitcmd fetch
+@@ -41,9 +42,9 @@ function applyPatch {
+     # Special case Windows handling because of ARG_MAX constraint
+     if [[ $windows == "true" ]]; then
+         echo "  Using workaround for Windows ARG_MAX constraint"
+-        find "$basedir/${what_name}-Patches/"*.patch -print0 | xargs -0 $applycmd
++        find "$patchdir/"*.patch -print0 | xargs -0 $applycmd
+     else
+-        $applycmd "$basedir/${what_name}-Patches/"*.patch
++        $applycmd "$patchdir/"*.patch
+     fi
+ 
+     if [ "$?" != "0" ]; then
+@@ -95,4 +96,15 @@ cd "$basedir"
+     echo "Failed to apply Paper Patches"
+     exit 1
+ ) || exit 1
++
++# Apply Yukkit
++cd "$basedir"
++(
++    applyPatch Paper-API ../Yukkit-API HEAD ../patches/yukkit-api &&
++    applyPatch Paper-Server ../Yukkit-Server HEAD ../patches/yukkit-server
++) || (
++    echo "Failed to apply Yukkit Patches"
++    exit 1
++) || exit 1
++
+ ) || exit 1
+-- 
+2.26.2.windows.1
+
