@@ -3,9 +3,6 @@ From: YukiLeafX <yukileafx@gmail.com>
 Date: Sun, 24 May 2020 06:23:43 +0900
 Subject: [PATCH] Fast CraftBukkit NMS patches
 
----
- scripts/init.sh | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/scripts/init.sh b/scripts/init.sh
 index 3ef481b8..2dc0a0e5 100755
