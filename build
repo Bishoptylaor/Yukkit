@@ -79,36 +79,36 @@ class Command():
             md5_vanilla_jar = hashlib.md5(s).hexdigest()
 
         assert md5 == md5_vanilla_jar
-        print(chr(0x1f6e1), vanilla_jar, 'hashes match.', f'({md5} == {md5_vanilla_jar})')
+        print('Passing', '>>', vanilla_jar, 'hashes match.', f'({md5} == {md5_vanilla_jar})')
 
         builddata.module().git.restore('--source', 'origin/master', '--', 'bin')
 
         if not class_jar.is_file():
             print('Mapping', '>>', vanilla_jar, '<', cm, '->', class_jar)
             subprocess.run(['java', '-jar', ss2_jar, 'map', '--only', '.', '--only', 'net/minecraft', '--auto-lvt', 'BASIC', '--auto-member', 'SYNTHETIC', '-i', vanilla_jar, '-m', cm, '-o', class_jar], check=True)
-        print(chr(0x2611), class_jar, 'is installed.')
+        print('Passing', '>>', class_jar, 'is installed.')
 
         if not member_jar.is_file():
             print('Mapping', '>>', class_jar, '<', mm, '->', member_jar)
             subprocess.run(['java', '-jar', ss2_jar, 'map', '--only', '.', '--only', 'net/minecraft', '--auto-member', 'LOGGER', '--auto-member', 'TOKENS', '-i', class_jar, '-m', mm, '-o', member_jar], check=True)
-        print(chr(0x2611), member_jar, 'is installed.')
+        print('Passing', '>>', member_jar, 'is installed.')
 
         if not nms_jar.is_file():
             print('Mapping', '>>', member_jar, '<', pm, '&', at, '->', nms_jar)
             subprocess.run(['java', '-jar', ss_jar, 'map', '--only', '.', '--only', 'net/minecraft', '-i', member_jar, '--access-transformer', at, '-m', pm, '-o', nms_jar], check=True)
-        print(chr(0x2611), nms_jar, 'is installed.')
+        print('Passing', '>>', nms_jar, 'is installed.')
 
         if not nms_class_out.is_dir():
             nms_class_out.mkdir(parents=True, exist_ok=True)
             print('Extracting', '>>', nms_jar, '->', nms_class_out)
             subprocess.run(['jar', 'xvf', nms_jar.resolve(), 'net/minecraft'], cwd=nms_class_out, check=True)
-        print(chr(0x1f4e6), nms_class_out, 'found.')
+        print('Passing', '>>', nms_class_out, 'directories found.')
 
         if not nms_src_out.is_dir():
             nms_src_out.mkdir(parents=True, exist_ok=True)
             print('Decompiling', '>>', nms_class_out, '->', nms_src_out)
             subprocess.run(['java', '-jar', ff_jar, '-dgs=1', '-hdc=0', '-asc=1', '-udv=0', nms_class_out, nms_src_out], check=True)
-        print(chr(0x1f4e6), nms_src_out, 'found.')
+        print('Passing', '>>', nms_src_out, 'directories found.')
 
         builddata.module().git.restore('--source', 'HEAD', '--', 'bin')
 
