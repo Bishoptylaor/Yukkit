@@ -11,8 +11,6 @@ import subprocess
 class Command():
     def __init__(self):
         self.repo = git.Repo('.')
-        self.data_submod_name = 'modules/BuildData'
-        self.data_dir = pathlib.Path('modules/BuildData')
 
     def init(self, clean=False, file='modules.json'):
         if clean:
@@ -37,59 +35,57 @@ class Command():
             submod.module().git.switch('--detach', m['commit'])
             print(chr(0x2705), 'HEAD is now', m['commit'], '@', m['name'])
 
-    def info(self):
-        with open(self.data_dir / 'info.json', 'r') as f:
-            s = f.read()
-            return json.loads(s)
+    def install(self, out_dir='bin', nms_out_dir='nms-decompile'):
+        self.init()
 
-    def vanilla_jar(self, out_dir='bin'):
+        builddata = self.repo.submodule('modules/BuildData')
+        builddata_dir = pathlib.Path(builddata.module().working_tree_dir)
+
         out = pathlib.Path(out_dir)
+        nms_out = pathlib.Path(nms_out_dir)
 
-        ver = self.info()['minecraftVersion']
-        url = self.info()['serverUrl']
-        md5 = self.info()['minecraftHash']
-
-        jar = out / f'vanilla-{ver}.jar'
-
-        out.mkdir(parents=True, exist_ok=True)
-
-        if not jar.is_file():
-            print('Downloading', '>>', url, '->', jar)
-            urllib.request.urlretrieve(url, jar)
-
-        with open(jar, 'rb') as f:
+        with open(builddata_dir / 'info.json', 'r') as f:
             s = f.read()
-            md5_jar = hashlib.md5(s).hexdigest()
+            info = json.loads(s)
 
-        assert md5 == md5_jar
-        print(chr(0x1f6e1), jar, 'hashes match.', f'({md5} == {md5_jar})')
+        ver = info['minecraftVersion']
+        url = info['serverUrl']
+        md5 = info['minecraftHash']
 
-        return jar
+        at = builddata_dir / 'mappings' / info['accessTransforms']
+        cm = builddata_dir / 'mappings' / info['classMappings']
+        mm = builddata_dir / 'mappings' / info['memberMappings']
+        pm = builddata_dir / 'mappings' / info['packageMappings']
 
-    def nms_jar(self, vanilla_jar_file, out_dir='bin'):
-        out = pathlib.Path(out_dir)
-
-        ver = self.info()['minecraftVersion']
-
-        at = self.data_dir / 'mappings' / self.info()['accessTransforms']
-        cm = self.data_dir / 'mappings' / self.info()['classMappings']
-        mm = self.data_dir / 'mappings' / self.info()['memberMappings']
-        pm = self.data_dir / 'mappings' / self.info()['packageMappings']
-
+        ss_jar = builddata_dir / 'bin' / 'SpecialSource.jar'
+        ss2_jar = builddata_dir / 'bin' / 'SpecialSource-2.jar'
+        ff_jar = builddata_dir / 'bin' / 'fernflower.jar'
+        vanilla_jar = out / f'vanilla-{ver}.jar'
         class_jar = out / f'nms-{ver}-class.jar'
         member_jar = out / f'nms-{ver}-member.jar'
-        jar = out / f'nms-{ver}.jar'
-        ss_jar = self.data_dir / 'bin' / 'SpecialSource.jar'
-        ss2_jar = self.data_dir / 'bin' / 'SpecialSource-2.jar'
+        nms_jar = out / f'nms-{ver}.jar'
+        nms_class_out = nms_out / f'{ver}-bin'
+        nms_src_out = nms_out / f'{ver}-src'
 
         out.mkdir(parents=True, exist_ok=True)
+        nms_out.mkdir(parents=True, exist_ok=True)
 
-        submod = self.repo.submodules[self.data_submod_name]
-        submod.module().git.restore('--source', 'origin/master', '--', 'bin')
+        if not vanilla_jar.is_file():
+            print('Downloading', '>>', url, '->', vanilla_jar)
+            urllib.request.urlretrieve(url, vanilla_jar)
+
+        with open(vanilla_jar, 'rb') as f:
+            s = f.read()
+            md5_vanilla_jar = hashlib.md5(s).hexdigest()
+
+        assert md5 == md5_vanilla_jar
+        print(chr(0x1f6e1), vanilla_jar, 'hashes match.', f'({md5} == {md5_vanilla_jar})')
+
+        builddata.module().git.restore('--source', 'origin/master', '--', 'bin')
 
         if not class_jar.is_file():
-            print('Mapping', '>>', vanilla_jar_file, '<', cm, '->', class_jar)
-            subprocess.run(['java', '-jar', ss2_jar, 'map', '--only', '.', '--only', 'net/minecraft', '--auto-lvt', 'BASIC', '--auto-member', 'SYNTHETIC', '-i', vanilla_jar_file, '-m', cm, '-o', class_jar], check=True)
+            print('Mapping', '>>', vanilla_jar, '<', cm, '->', class_jar)
+            subprocess.run(['java', '-jar', ss2_jar, 'map', '--only', '.', '--only', 'net/minecraft', '--auto-lvt', 'BASIC', '--auto-member', 'SYNTHETIC', '-i', vanilla_jar, '-m', cm, '-o', class_jar], check=True)
         print(chr(0x2611), class_jar, 'is installed.')
 
         if not member_jar.is_file():
@@ -97,51 +93,24 @@ class Command():
             subprocess.run(['java', '-jar', ss2_jar, 'map', '--only', '.', '--only', 'net/minecraft', '--auto-member', 'LOGGER', '--auto-member', 'TOKENS', '-i', class_jar, '-m', mm, '-o', member_jar], check=True)
         print(chr(0x2611), member_jar, 'is installed.')
 
-        if not jar.is_file():
-            print('Mapping', '>>', member_jar, '<', pm, '&', at, '->', jar)
-            subprocess.run(['java', '-jar', ss_jar, 'map', '--only', '.', '--only', 'net/minecraft', '-i', member_jar, '--access-transformer', at, '-m', pm, '-o', jar], check=True)
-        print(chr(0x2611), jar, 'is installed.')
+        if not nms_jar.is_file():
+            print('Mapping', '>>', member_jar, '<', pm, '&', at, '->', nms_jar)
+            subprocess.run(['java', '-jar', ss_jar, 'map', '--only', '.', '--only', 'net/minecraft', '-i', member_jar, '--access-transformer', at, '-m', pm, '-o', nms_jar], check=True)
+        print(chr(0x2611), nms_jar, 'is installed.')
 
-        submod.module().git.restore('--source', 'HEAD', '--', 'bin')
+        if not nms_class_out.is_dir():
+            nms_class_out.mkdir(parents=True, exist_ok=True)
+            print('Extracting', '>>', nms_jar, '->', nms_class_out)
+            subprocess.run(['jar', 'xvf', nms_jar.resolve(), 'net/minecraft'], cwd=nms_class_out, check=True)
+        print(chr(0x1f4e6), nms_class_out, 'found.')
 
-        return jar
+        if not nms_src_out.is_dir():
+            nms_src_out.mkdir(parents=True, exist_ok=True)
+            print('Decompiling', '>>', nms_class_out, '->', nms_src_out)
+            subprocess.run(['java', '-jar', ff_jar, '-dgs=1', '-hdc=0', '-asc=1', '-udv=0', nms_class_out, nms_src_out], check=True)
+        print(chr(0x1f4e6), nms_src_out, 'found.')
 
-    def decompile_nms_jar(self, nms_jar_file, out_dir='nms-decompile'):
-        jar = pathlib.Path(nms_jar_file)
-        out = pathlib.Path(out_dir)
-
-        ver = self.info()['minecraftVersion']
-
-        class_out = out / f'{ver}-bin'
-        src_out = out / f'{ver}-src'
-        ff_jar = self.data_dir / 'bin' / 'fernflower.jar'
-
-        out.mkdir(parents=True, exist_ok=True)
-
-        if not class_out.is_dir():
-            print('Extracting', '>>', jar, '->', class_out)
-            class_out.mkdir(parents=True, exist_ok=True)
-            subprocess.run(['jar', 'xvf', jar.resolve(), 'net/minecraft'], check=True, cwd=class_out)
-        print(chr(0x1f4e6), class_out, 'found.')
-
-        submod = self.repo.submodules[self.data_submod_name]
-        submod.module().git.restore('--source', 'origin/master', '--', 'bin')
-
-        if not src_out.is_dir():
-            print('Decompiling', '>>', class_out, '->', src_out)
-            src_out.mkdir(parents=True, exist_ok=True)
-            subprocess.run(['java', '-jar', ff_jar, '-dgs=1', '-hdc=0', '-asc=1', '-udv=0', class_out, src_out], check=True)
-        print(chr(0x1f4e6), src_out, 'found.')
-
-        submod.module().git.restore('--source', 'HEAD', '--', 'bin')
-
-        return src_out
-
-    def install(self):
-        self.init()
-        vanilla_jar_file = self.vanilla_jar()
-        nms_jar_file = self.nms_jar(vanilla_jar_file)
-        self.decompile_nms_jar(nms_jar_file)
+        builddata.module().git.restore('--source', 'HEAD', '--', 'bin')
 
 if __name__ == '__main__':
     fire.Fire(Command())
