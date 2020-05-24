@@ -18,10 +18,10 @@ index cc0360660..289495cb2 100644
          verbose = getBoolean("verbose", false);
 diff --git a/src/main/java/io/github/yukileafx/YukkitConfig.java b/src/main/java/io/github/yukileafx/YukkitConfig.java
 new file mode 100644
-index 000000000..498a346ed
+index 000000000..62a995725
 --- /dev/null
 +++ b/src/main/java/io/github/yukileafx/YukkitConfig.java
-@@ -0,0 +1,116 @@
+@@ -0,0 +1,121 @@
 +package io.github.yukileafx;
 +
 +import java.io.File;
@@ -99,7 +99,12 @@ index 000000000..498a346ed
 +                    LOGGER.log(Level.SEVERE, "Settings file " + path + " is invalid syntax. Skipping...", e);
 +                }
 +                yaml.getKeys(false).forEach(id -> {
-+                    yaml.getConfigurationSection(id).getValues(true).entrySet().stream()
++                    ConfigurationSection section = yaml.getConfigurationSection(id);
++                    if (section == null || !SETTINGS.containsKey(id)) {
++                        LOGGER.log(Level.WARNING, "Invalid section " + id + " in " + path + ". Ignoring...");
++                        return;
++                    }
++                    section.getValues(true).entrySet().stream() //
 +                            .filter(entry -> entry.getKey() != null)
 +                            .filter(entry -> !(entry.getValue() instanceof ConfigurationSection))
 +                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
@@ -107,7 +112,7 @@ index 000000000..498a346ed
 +                });
 +            });
 +        } catch (IOException e) {
-+            LOGGER.log(Level.SEVERE, "Unable to read configuration files @ " + dir, e);
++            LOGGER.log(Level.SEVERE, "Unable to read configuration files in " + dir, e);
 +        }
 +    }
 +
