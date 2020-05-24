@@ -18,13 +18,15 @@ function load {
 }
 
 function save {
-  if [ -d Paper ]; then
-    (
-      cd Paper
-      find ../patches/custom -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 rm
-      git format-patch -o ../patches/custom --no-stat --no-numbered --zero-commit ver/1.12.2
-    )
+  if [ ! -d Paper ]; then
+    return
   fi
+  (
+    cd Paper
+    find ../patches/custom -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 rm
+    git format-patch -o ../patches/custom --no-stat --no-numbered --zero-commit ver/1.12.2
+    ./paper rebuild
+  )
 }
 
 "$@"

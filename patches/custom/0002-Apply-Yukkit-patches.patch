@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: YukiLeafX <yukileafx@gmail.com>
-Date: Sun, 24 May 2020 08:41:50 +0900
+Date: Sun, 24 May 2020 09:02:02 +0900
 Subject: [PATCH] Apply Yukkit patches
 
 
 diff --git a/scripts/applyPatches.sh b/scripts/applyPatches.sh
-index 14228112..8ab8f561 100755
+index 14228112..00231ec2 100755
 --- a/scripts/applyPatches.sh
 +++ b/scripts/applyPatches.sh
 @@ -16,6 +16,7 @@ function applyPatch {
@@ -16,19 +16,22 @@ index 14228112..8ab8f561 100755
  
      cd "$basedir/$what"
      $gitcmd fetch
-@@ -41,9 +42,9 @@ function applyPatch {
-     # Special case Windows handling because of ARG_MAX constraint
-     if [[ $windows == "true" ]]; then
-         echo "  Using workaround for Windows ARG_MAX constraint"
+@@ -38,13 +39,7 @@ function applyPatch {
+ 
+     $gitcmd am --abort >/dev/null 2>&1
+ 
+-    # Special case Windows handling because of ARG_MAX constraint
+-    if [[ $windows == "true" ]]; then
+-        echo "  Using workaround for Windows ARG_MAX constraint"
 -        find "$basedir/${what_name}-Patches/"*.patch -print0 | xargs -0 $applycmd
-+        find "$patchdir/"*.patch -print0 | xargs -0 $applycmd
-     else
+-    else
 -        $applycmd "$basedir/${what_name}-Patches/"*.patch
-+        $applycmd "$patchdir/"*.patch
-     fi
+-    fi
++    find "$patchdir" -iname '*.patch' -print0 | xargs -0 $applycmd
  
      if [ "$?" != "0" ]; then
-@@ -95,4 +96,15 @@ cd "$basedir"
+         echo "  Something did not apply cleanly to $target."
+@@ -95,4 +90,15 @@ cd "$basedir"
      echo "Failed to apply Paper Patches"
      exit 1
  ) || exit 1
