@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: YukiLeafX <yukileafx@gmail.com>
-Date: Sun, 24 May 2020 09:02:02 +0900
-Subject: [PATCH] Apply Yukkit patches
+Date: Sun, 24 May 2020 09:23:42 +0900
+Subject: [PATCH] Add support for Yukkit patches
 
 
 diff --git a/scripts/applyPatches.sh b/scripts/applyPatches.sh
-index 14228112..00231ec2 100755
+index 14228112..83ef4750 100755
 --- a/scripts/applyPatches.sh
 +++ b/scripts/applyPatches.sh
 @@ -16,6 +16,7 @@ function applyPatch {
@@ -27,7 +27,7 @@ index 14228112..00231ec2 100755
 -    else
 -        $applycmd "$basedir/${what_name}-Patches/"*.patch
 -    fi
-+    find "$patchdir" -iname '*.patch' -print0 | xargs -0 $applycmd
++    find "$patchdir" -iname '*.patch' -print0 | sort -z | xargs -0 $applycmd
  
      if [ "$?" != "0" ]; then
          echo "  Something did not apply cleanly to $target."
@@ -42,7 +42,7 @@ index 14228112..00231ec2 100755
 +    applyPatch Paper-API ../Yukkit-API HEAD ../patches/yukkit-api &&
 +    applyPatch Paper-Server ../Yukkit-Server HEAD ../patches/yukkit-server
 +) || (
-+    echo "Failed to apply Yukkit Patches"
++    echo 'Failed to apply Yukkit Patches'
 +    exit 1
 +) || exit 1
 +
