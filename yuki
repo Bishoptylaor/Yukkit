@@ -40,11 +40,8 @@ function save {
 
 function jar {
   load
-  mvn clean install
-  (
-    cd Paper/work/Paperclip
-    mvn clean package -Dmcver=1.12.2 -Dpaperjar=../../../../Yukkit-Server/target/paper-1.12.2.jar -Dvanillajar=../../Minecraft/1.12.2/1.12.2.jar
-  )
+  mvn -B clean install
+  mvn -B -f Paper/work/Paperclip/pom.xml -Dmcver=1.12.2 -Dpaperjar=../../../../Yukkit-Server/target/yukkit-1.12.2.jar -Dvanillajar=../../Minecraft/1.12.2/1.12.2.jar clean package
   cp -v Paper/work/Paperclip/assembly/target/paperclip-1.12.2.jar Yukkit.jar
 }
 

@@ -1,9 +1,6 @@
 name: Build
 
-on:
-  push:
-    branches:
-      - master
+on: push
 
 jobs:
   build:
@@ -13,6 +10,33 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 8
+
       - run: git config --global user.name "GitHub Actions"
       - run: git config --global user.email "actions@github.com"
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: '${{ runner.os }}-m2-cache'
+
       - run: ./yuki jar
+
+      - uses: actions/create-release@v1
+        if: github.ref == 'refs/heads/release'
+        id: release
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        with:
+          tag_name: 'b${{ github.run_number }}'
+          release_name: 'Release b${{ github.run_number }}'
+
+      - uses: actions/upload-release-asset@v1
+        if: github.ref == 'refs/heads/release'
+        id: upload-jar
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        with:
+          upload_url: '${{ steps.release.outputs.upload_url }}'
+          asset_path: Yukkit.jar
+          asset_name: Yukkit.jar
+          asset_content_type: application/octet-stream
