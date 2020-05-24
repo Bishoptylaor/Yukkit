@@ -15,4 +15,4 @@ jobs:
           java-version: 8
       - run: git config --global user.name "GitHub Actions"
       - run: git config --global user.email "actions@github.com"
-      - run: ./yuki load
+      - run: ./yuki jar

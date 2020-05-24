@@ -38,4 +38,14 @@ function save {
   )
 }
 
+function jar {
+  load
+  mvn clean package
+  (
+    cd Paper/work/Paperclip
+    mvn clean package -Dmcver=1.12.2 -Dpaperjar=../../../../Yukkit-Server/target/paper-1.12.2.jar -Dvanillajar=../../Minecraft/1.12.2/1.12.2.jar
+  )
+  cp -v Paper/work/Paperclip/assembly/target/paperclip-1.12.2.jar Yukkit.jar
+}
+
 "$@"
