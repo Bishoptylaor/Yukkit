@@ -34,7 +34,7 @@ index 5055a4fb8..8288f656f 100644
              PropertyManager.a.warn("Failed to save {}", this.file, exception);
              this.a();
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index af4c369ca..e7b3ab2e6 100644
+index 71790216e..aa19507de 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -295,8 +295,8 @@ public final class CraftServer implements Server {

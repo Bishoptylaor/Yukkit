@@ -195,7 +195,7 @@ index 8288f656f..79880e1fe 100644
              return getOverride(s, Boolean.parseBoolean(this.getString(s, "" + flag))); //CraftBukkit
          } catch (Exception exception) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index e7b3ab2e6..9aa6131ad 100644
+index aa19507de..138700d61 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -217,6 +217,7 @@ public final class CraftServer implements Server {
