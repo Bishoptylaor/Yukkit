@@ -3,13 +3,21 @@
 
   <groupId>io.github.yukileafx</groupId>
   <artifactId>yukkit-parent</artifactId>
-  <version>dev-SNAPSHOT</version>
+  <version>PARENT</version>
   <packaging>pom</packaging>
 
-  <name>Yukkit-Parent</name>
+  <name>@Yukkit</name>
+  <url>https://github.com/YukiLeafX/Yukkit</url>
 
   <modules>
     <module>Yukkit-API</module>
     <module>Yukkit-Server</module>
   </modules>
+
+  <repositories>
+    <repository>
+      <id>papermc</id>
+      <url>https://papermc.io/repo/repository/maven-public/</url>
+    </repository>
+  </repositories>
 </project>
