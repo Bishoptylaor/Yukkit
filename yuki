@@ -11,7 +11,7 @@ function load {
     git reset --hard ver/1.12.2
     git clean -df
     if [ -d ../patches/custom ]; then
-      find ../patches/custom -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 git am
+      find ../patches/custom -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 git am --3way
     fi
     ./paper patch
   )
@@ -23,9 +23,18 @@ function save {
   fi
   (
     cd Paper
-    find ../patches/custom -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 rm
+    find ../patches/custom -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 rm -f
     git format-patch -o ../patches/custom --no-stat --no-numbered --zero-commit ver/1.12.2
-    ./paper rebuild
+  )
+  (
+    cd Yukkit-API
+    find ../patches/yukkit-api -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 rm -f
+    git format-patch -o ../patches/yukkit-api --no-stat --no-numbered --zero-commit upstream/upstream
+  )
+  (
+    cd Yukkit-Server
+    find ../patches/yukkit-server -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 rm -f
+    git format-patch -o ../patches/yukkit-server --no-stat --no-numbered --zero-commit upstream/upstream
   )
 }
 

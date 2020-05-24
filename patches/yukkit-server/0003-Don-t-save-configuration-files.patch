@@ -1,4 +1,4 @@
-From eaa2c58152773e08520d744394e9e70da4804394 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: YukiLeafX <yukileafx@gmail.com>
 Date: Sat, 16 May 2020 11:47:16 +0900
 Subject: [PATCH] Don't save configuration files
