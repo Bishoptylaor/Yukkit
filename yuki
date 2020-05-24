@@ -40,6 +40,9 @@ function save {
 
 function jar {
   load
+  if [ -n "$1" ] && [ -n "$2" ]; then
+    git tag -a "$1" -m "$2"
+  fi
   mvn -B clean install
   mvn -B -f Paper/work/Paperclip/pom.xml -Dmcver=1.12.2 -Dpaperjar=../../../../Yukkit-Server/target/yukkit-1.12.2.jar -Dvanillajar=../../Minecraft/1.12.2/1.12.2.jar clean package
   cp -v Paper/work/Paperclip/assembly/target/paperclip-1.12.2.jar Yukkit.jar
