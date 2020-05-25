@@ -1,0 +1,79 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Mon, 25 May 2020 21:18:00 +0900
+Subject: [PATCH] Async FileConfiguration IO
+
+
+diff --git a/src/main/java/io/github/yukileafx/AsyncConfigIO.java b/src/main/java/io/github/yukileafx/AsyncConfigIO.java
+new file mode 100644
+index 00000000..6f67f62f
+--- /dev/null
++++ b/src/main/java/io/github/yukileafx/AsyncConfigIO.java
+@@ -0,0 +1,41 @@
++package io.github.yukileafx;
++
++import java.io.IOException;
++import java.nio.charset.StandardCharsets;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.util.concurrent.ExecutorService;
++import java.util.concurrent.Executors;
++
++import com.google.common.util.concurrent.ThreadFactoryBuilder;
++
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
++import org.bukkit.configuration.file.FileConfiguration;
++
++public class AsyncConfigIO {
++
++    private static final Logger LOGGER = LogManager.getLogger();
++
++    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(
++            new ThreadFactoryBuilder().setNameFormat(AsyncConfigIO.class.getSimpleName()).build());
++
++    private final FileConfiguration config;
++
++    public AsyncConfigIO(FileConfiguration config) {
++        this.config = config;
++    }
++
++    public void write(Path path) {
++        EXECUTOR.submit(() -> {
++            String data = config.saveToString();
++            byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
++            try {
++                Files.createDirectories(path.getParent());
++                Files.write(path, bytes);
++            } catch (IOException e) {
++                LOGGER.error("An error occurred while writing to " + path + ".", e);
++            }
++        });
++    }
++}
+diff --git a/src/main/java/org/bukkit/configuration/file/FileConfiguration.java b/src/main/java/org/bukkit/configuration/file/FileConfiguration.java
+index 6767d34a..f02fee0a 100644
+--- a/src/main/java/org/bukkit/configuration/file/FileConfiguration.java
++++ b/src/main/java/org/bukkit/configuration/file/FileConfiguration.java
+@@ -63,17 +63,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
+     public void save(File file) throws IOException {
+         Validate.notNull(file, "File cannot be null");
+ 
+-        Files.createParentDirs(file);
+-
+-        String data = saveToString();
+-
+-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charsets.UTF_8);
+-
+-        try {
+-            writer.write(data);
+-        } finally {
+-            writer.close();
+-        }
++        new io.github.yukileafx.AsyncConfigIO(this).write(file.toPath()); // Yukkit
+     }
+ 
+     /**
+-- 
+2.26.2.windows.1
+
