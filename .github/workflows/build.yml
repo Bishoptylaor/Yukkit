@@ -8,18 +8,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Initialize >> Java 8
+      - name: Initialize | Java 8
         uses: actions/setup-java@v1
         with:
           java-version: 8
 
-      - name: Initialize >> Git config
+      - name: Initialize | Git config
         run: |
           git config --global user.name 'GitHub Actions'
           git config --global user.email actions@github.com
           git config --global --list
 
-      - name: Restore >> Maven cache
+      - name: Restore | Maven cache
         uses: actions/cache@v1
         with:
           path: ~/.m2/repository
@@ -27,13 +27,22 @@ jobs:
 
       - run: ./yuki load
 
-      - name: Restore >> Paper 1.12.2 cache
+      - name: Restore | Paper 1.12.2 Git config cache
         uses: actions/cache@v1
         with:
-          path: |
-            Paper/.git/config
-            Paper/.git/modules/*
-            Paper/work/*
+          path: Paper/.git/config
+          key: '${{ runner.os }}-paper-1.12.2-git-config-cache'
+
+      - name: Restore | Paper 1.12.2 Git module cache
+        uses: actions/cache@v1
+        with:
+          path: Paper/.git/modules/*
+          key: '${{ runner.os }}-paper-1.12.2-git-module-cache'
+
+      - name: Restore | Paper 1.12.2 submodule cache
+        uses: actions/cache@v1
+        with:
+          path: Paper/work/*
           key: '${{ runner.os }}-paper-1.12.2-submodule-cache'
 
       - run: ./yuki apply
