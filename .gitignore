@@ -2,3 +2,5 @@
 /Yukkit-API
 /Yukkit-Server
 *.jar
+/.project
+/.settings
