@@ -6,10 +6,10 @@ Subject: [PATCH] Async FileConfiguration IO
 
 diff --git a/src/main/java/io/github/yukileafx/AsyncConfigIO.java b/src/main/java/io/github/yukileafx/AsyncConfigIO.java
 new file mode 100644
-index 00000000..6f67f62f
+index 00000000..85461c2b
 --- /dev/null
 +++ b/src/main/java/io/github/yukileafx/AsyncConfigIO.java
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,37 @@
 +package io.github.yukileafx;
 +
 +import java.io.IOException;
@@ -18,19 +18,15 @@ index 00000000..6f67f62f
 +import java.nio.file.Path;
 +import java.util.concurrent.ExecutorService;
 +import java.util.concurrent.Executors;
++import java.util.logging.Level;
 +
-+import com.google.common.util.concurrent.ThreadFactoryBuilder;
-+
-+import org.apache.logging.log4j.LogManager;
-+import org.apache.logging.log4j.Logger;
++import org.bukkit.Bukkit;
 +import org.bukkit.configuration.file.FileConfiguration;
 +
 +public class AsyncConfigIO {
 +
-+    private static final Logger LOGGER = LogManager.getLogger();
-+
-+    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(
-+            new ThreadFactoryBuilder().setNameFormat(AsyncConfigIO.class.getSimpleName()).build());
++    private static final ExecutorService EXECUTOR = Executors
++            .newSingleThreadExecutor(r -> new Thread(r, AsyncConfigIO.class.getSimpleName()));
 +
 +    private final FileConfiguration config;
 +
@@ -46,7 +42,7 @@ index 00000000..6f67f62f
 +                Files.createDirectories(path.getParent());
 +                Files.write(path, bytes);
 +            } catch (IOException e) {
-+                LOGGER.error("An error occurred while writing to " + path + ".", e);
++                Bukkit.getLogger().log(Level.SEVERE, "An error occurred while writing to " + path + ".", e);
 +            }
 +        });
 +    }
