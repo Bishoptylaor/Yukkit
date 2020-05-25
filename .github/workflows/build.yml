@@ -19,7 +19,7 @@ jobs:
           path: ~/.m2/repository
           key: '${{ runner.os }}-m2-cache'
 
-      - run: './yuki jar #${{ github.run_number }} "Build #${{ github.run_number }}"'
+      - run: './yuki jar "#${{ github.run_number }}" "Build #${{ github.run_number }}"'
 
       - uses: actions/create-release@v1
         if: github.ref == 'refs/heads/release'
