@@ -12,6 +12,15 @@ function load {
     if [ -d ../patches/custom ]; then
       find ../patches/custom -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 git am -3
     fi
+  )
+}
+
+function apply {
+  if [ ! -d Paper ]; then
+    return
+  fi
+  (
+    cd Paper
     ./paper patch
   )
 }
@@ -37,14 +46,19 @@ function save {
   )
 }
 
-function jar {
-  load
+function build {
   if [ -n "$1" ] && [ -n "$2" ]; then
     git tag -a "$1" -m "$2"
   fi
   mvn -B clean install
   mvn -B -f Paper/work/Paperclip/pom.xml -Dmcver=1.12.2 -Dpaperjar=../../../../Yukkit-Server/target/yukkit-1.12.2.jar -Dvanillajar=../../Minecraft/1.12.2/1.12.2.jar clean package
   cp -v Paper/work/Paperclip/assembly/target/paperclip-1.12.2.jar Yukkit.jar
+}
+
+function jar {
+  load
+  apply
+  build
 }
 
 "$@"
