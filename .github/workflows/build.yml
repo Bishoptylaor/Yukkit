@@ -8,12 +8,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Init >> Java 8
+      - name: Initialize >> Java 8
         uses: actions/setup-java@v1
         with:
           java-version: 8
 
-      - name: Init >> Git config
+      - name: Initialize >> Git config
         run: |
           git config --global user.name 'GitHub Actions'
           git config --global user.email actions@github.com
@@ -37,9 +37,7 @@ jobs:
           key: '${{ runner.os }}-paper-1.12.2-submodule-cache'
 
       - run: ./yuki apply
-      - run: './yuki build "#${{ github.run_number }}" "Build #${{ github.run_number }}"'
-
-      - run: git tag --list
+      - run: "./yuki build '#${{ github.run_number }}' 'Build #${{ github.run_number }}'"
 
       - uses: actions/create-release@v1
         if: github.ref == 'refs/heads/release'
