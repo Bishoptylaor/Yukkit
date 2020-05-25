@@ -36,17 +36,21 @@ jobs:
       - name: Restore | Paper 1.12.2 Git module cache
         uses: actions/cache@v1
         with:
-          path: Paper/.git/modules/*
+          path: Paper/.git/modules
           key: '${{ runner.os }}-paper-1.12.2-git-module-cache'
 
       - name: Restore | Paper 1.12.2 submodule cache
         uses: actions/cache@v1
         with:
-          path: Paper/work/*
+          path: Paper/work
           key: '${{ runner.os }}-paper-1.12.2-submodule-cache'
 
       - run: ./yuki apply
+
       - run: "./yuki build '#${{ github.run_number }}' 'Build #${{ github.run_number }}'"
+
+      - run: ./yuki clip
+        if: github.ref == 'refs/heads/release'
 
       - uses: actions/create-release@v1
         if: github.ref == 'refs/heads/release'
