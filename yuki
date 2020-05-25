@@ -8,10 +8,9 @@ function load {
   fi
   (
     cd Paper
-    git reset --hard origin/ver/1.12.2
-    git clean -df
+    git switch -C ver/1.12.2 origin/ver/1.12.2
     if [ -d ../patches/custom ]; then
-      find ../patches/custom -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 git am --3way
+      find ../patches/custom -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 git am -3
     fi
     ./paper patch
   )
