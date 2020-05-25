@@ -27,23 +27,17 @@ jobs:
 
       - run: ./yuki load
 
-      - name: Restore | Paper 1.12.2 Git config cache
+      - name: Restore | Paper 1.12.2 Git cache
         uses: actions/cache@v1
         with:
-          path: Paper/.git/config
-          key: '${{ runner.os }}-paper-1.12.2-git-config-cache'
+          path: Paper/.git
+          key: '${{ runner.os }}-paper-1.12.2-git-cache'
 
-      - name: Restore | Paper 1.12.2 Git module cache
-        uses: actions/cache@v1
-        with:
-          path: Paper/.git/modules
-          key: '${{ runner.os }}-paper-1.12.2-git-module-cache'
-
-      - name: Restore | Paper 1.12.2 submodule cache
+      - name: Restore | Paper 1.12.2 Git submodule cache
         uses: actions/cache@v1
         with:
           path: Paper/work
-          key: '${{ runner.os }}-paper-1.12.2-submodule-cache'
+          key: '${{ runner.os }}-paper-1.12.2-git-submodule-cache'
 
       - run: ./yuki apply
 
