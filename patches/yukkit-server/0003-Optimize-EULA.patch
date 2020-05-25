@@ -5,7 +5,7 @@ Subject: [PATCH] Optimize EULA
 
 
 diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
-index 6a8292ce4..2d7308e5d 100644
+index 6a8292ce..2d7308e5 100644
 --- a/src/main/java/net/minecraft/server/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/DedicatedServer.java
 @@ -142,7 +142,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
@@ -18,7 +18,7 @@ index 6a8292ce4..2d7308e5d 100644
          {
              System.err.println( "You have used the Spigot command line EULA agreement flag." );
 diff --git a/src/main/java/net/minecraft/server/EULA.java b/src/main/java/net/minecraft/server/EULA.java
-index 3623751bf..2b6673df7 100644
+index 3623751b..2b6673df 100644
 --- a/src/main/java/net/minecraft/server/EULA.java
 +++ b/src/main/java/net/minecraft/server/EULA.java
 @@ -31,7 +31,7 @@ public class EULA {
