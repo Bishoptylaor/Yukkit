@@ -5,7 +5,7 @@ Subject: [PATCH] Add support for Yukkit patches
 
 
 diff --git a/scripts/applyPatches.sh b/scripts/applyPatches.sh
-index 14228112..83ef4750 100755
+index 14228112..38d02123 100755
 --- a/scripts/applyPatches.sh
 +++ b/scripts/applyPatches.sh
 @@ -16,6 +16,7 @@ function applyPatch {
@@ -16,11 +16,10 @@ index 14228112..83ef4750 100755
  
      cd "$basedir/$what"
      $gitcmd fetch
-@@ -38,13 +39,7 @@ function applyPatch {
- 
+@@ -39,12 +40,7 @@ function applyPatch {
      $gitcmd am --abort >/dev/null 2>&1
  
--    # Special case Windows handling because of ARG_MAX constraint
+     # Special case Windows handling because of ARG_MAX constraint
 -    if [[ $windows == "true" ]]; then
 -        echo "  Using workaround for Windows ARG_MAX constraint"
 -        find "$basedir/${what_name}-Patches/"*.patch -print0 | xargs -0 $applycmd
@@ -31,7 +30,7 @@ index 14228112..83ef4750 100755
  
      if [ "$?" != "0" ]; then
          echo "  Something did not apply cleanly to $target."
-@@ -95,4 +90,15 @@ cd "$basedir"
+@@ -95,4 +91,15 @@ cd "$basedir"
      echo "Failed to apply Paper Patches"
      exit 1
  ) || exit 1
