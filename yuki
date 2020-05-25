@@ -62,6 +62,7 @@ function jar {
   load
   apply
   build
+  clip
 }
 
 "$@"
