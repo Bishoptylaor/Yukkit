@@ -1,7 +1,6 @@
 /Paper
-/Yukkit-*
-*.jar
 
-/.vscode
-/.project
-/.settings
+/Yukkit-API
+/Yukkit-Server
+
+Yukkit.jar
