@@ -16,9 +16,9 @@ object AsyncConfigWriter {
             val data = config.saveToString()
             kotlin.runCatching {
                 file.canonicalFile.parentFile
-                    .also { it.mkdirs() }
-                    .takeIf { it.isDirectory }
-                    ?: throw IOException("Unable to create parent directories.")
+                        .also { it.mkdirs() }
+                        .takeIf { it.isDirectory }
+                        ?: throw IOException("Unable to create parent directories.")
                 file.writeText(data)
             }.onFailure { e ->
                 Bukkit.getLogger().log(Level.SEVERE, "An error occurred while writing to $file.", e)
