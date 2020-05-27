@@ -21,7 +21,7 @@ function load {
     cd Yukkit-Core
     git fetch origin master
     git switch -C master origin/master
-    ./gradlew --console=plain --no-daemon publishToMavenLocal
+    ./gradlew --console=plain publishToMavenLocal
   )
 }
 
