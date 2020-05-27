@@ -41,7 +41,7 @@ jobs:
 
       - run: ./yscript apply
 
-      - run: "git tag -a '#${{ github.run_number }}' -m 'Build #${{ github.run_number }}'"
+      - run: "git tag --annotate --message='Build #${{ github.run_number }}' '#${{ github.run_number }}'"
       - run: ./yscript build
 
       - run: ./yscript clip
