@@ -5,7 +5,7 @@ Subject: [PATCH] POM
 
 
 diff --git a/pom.xml b/pom.xml
-index 2fa2dd7c..9cf337c3 100644
+index 2fa2dd7c7..ced219d5f 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -4,18 +4,18 @@
@@ -34,6 +34,21 @@ index 2fa2dd7c..9cf337c3 100644
      <description>An enhanced plugin API for Minecraft servers.</description>
  
      <properties>
+@@ -119,6 +119,14 @@
+             <scope>compile</scope>
+         </dependency>
+ 
++        <!-- Yukkit - Add Yukkit-Core -->
++        <dependency>
++            <groupId>io.github.yukileafx</groupId>
++            <artifactId>yukkit-core</artifactId>
++            <version>1.0.0-SNAPSHOT</version>
++            <scope>compile</scope>
++        </dependency>
++
+         <!-- testing -->
+         <dependency>
+             <groupId>junit</groupId>
 -- 
 2.26.2.windows.1
 

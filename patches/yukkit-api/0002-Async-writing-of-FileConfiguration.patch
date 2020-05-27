@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Mon, 25 May 2020 21:18:00 +0900
+Subject: [PATCH] Async writing of FileConfiguration
+
+
+diff --git a/src/main/java/org/bukkit/configuration/file/FileConfiguration.java b/src/main/java/org/bukkit/configuration/file/FileConfiguration.java
+index 6767d34a0..edf9b0db4 100644
+--- a/src/main/java/org/bukkit/configuration/file/FileConfiguration.java
++++ b/src/main/java/org/bukkit/configuration/file/FileConfiguration.java
+@@ -22,12 +22,16 @@ import java.nio.charset.Charset;
+ import org.bukkit.configuration.Configuration;
+ import org.bukkit.configuration.MemoryConfiguration;
+ 
++import io.github.yukileafx.yukkit.AsyncConfigWriter; // Yukkit
++
+ /**
+  * This is a base class for all File based implementations of {@link
+  * Configuration}
+  */
+ public abstract class FileConfiguration extends MemoryConfiguration {
+ 
++    private final AsyncConfigWriter writer = new AsyncConfigWriter(); // Yukkit
++
+     /**
+      * Creates an empty {@link FileConfiguration} with no default values.
+      */
+@@ -63,17 +67,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
+     public void save(File file) throws IOException {
+         Validate.notNull(file, "File cannot be null");
+ 
+-        Files.createParentDirs(file);
+-
+-        String data = saveToString();
+-
+-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charsets.UTF_8);
+-
+-        try {
+-            writer.write(data);
+-        } finally {
+-            writer.close();
+-        }
++        writer.write(file, this); // Yukkit
+     }
+ 
+     /**
+-- 
+2.26.2.windows.1
+

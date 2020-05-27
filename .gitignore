@@ -1,6 +1,5 @@
 /Paper
-/Yukkit-API
-/Yukkit-Server
+/Yukkit-*
 *.jar
 
 /.vscode

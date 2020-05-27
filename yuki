@@ -8,10 +8,20 @@ function load {
   fi
   (
     cd Paper
+    git fetch origin ver/1.12.2
     git switch -C ver/1.12.2 origin/ver/1.12.2
     if [ -d ../patches/custom ]; then
       find ../patches/custom -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 git am -3
     fi
+  )
+  if [ ! -d Yukkit-Core ]; then
+    git clone https://github.com/YukiLeafX/Yukkit-Core.git
+  fi
+  (
+    cd Yukkit-Core
+    git fetch origin master
+    git switch -C master origin/master
+    ./gradlew publishToMavenLocal --console plain
   )
 }
 
