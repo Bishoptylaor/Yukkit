@@ -25,7 +25,7 @@ jobs:
           path: ~/.m2/repository
           key: '${{ runner.os }}-m2-cache'
 
-      - run: ./yuki load
+      - run: ./yscript load
 
       - name: Restore | Paper 1.12.2 Git cache
         uses: actions/cache@v1
@@ -39,11 +39,12 @@ jobs:
           path: Paper/work
           key: '${{ runner.os }}-paper-1.12.2-git-submodule-cache'
 
-      - run: ./yuki apply
+      - run: ./yscript apply
 
-      - run: "./yuki build '#${{ github.run_number }}' 'Build #${{ github.run_number }}'"
+      - run: "git tag -a '#${{ github.run_number }}' -m 'Build #${{ github.run_number }}'"
+      - run: ./yscript build
 
-      - run: ./yuki clip
+      - run: ./yscript clip
         if: github.ref == 'refs/heads/release'
 
       - uses: actions/create-release@v1

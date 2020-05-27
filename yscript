@@ -57,9 +57,6 @@ function save {
 }
 
 function build {
-  if [ -n "$1" ] && [ -n "$2" ]; then
-    git tag -a "$1" -m "$2"
-  fi
   mvn -B clean install
 }
 
@@ -75,4 +72,16 @@ function jar {
   clip
 }
 
-"$@"
+function usage {
+  echo -e "Usage >> \e[1;31m$0 [ load | apply | build | clip | jar | save ]\e[m"
+}
+
+case "$1" in
+  load | init ) load ;;
+  apply | patch ) apply ;;
+  build ) build ;;
+  clip ) clip ;;
+  jar ) jar ;;
+  save ) save ;;
+  * ) usage ;;
+esac
