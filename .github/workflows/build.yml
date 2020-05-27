@@ -45,19 +45,19 @@ jobs:
       - run: ./yscript build
 
       - run: ./yscript clip
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/stable'
 
       - uses: actions/create-release@v1
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/stable'
         id: release
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         with:
           tag_name: '#${{ github.run_number }}'
-          release_name: 'Build #${{ github.run_number }}'
+          release_name: 'Build #${{ github.run_number }} - Stable'
 
       - uses: actions/upload-release-asset@v1
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/stable'
         id: upload-jar
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
