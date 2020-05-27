@@ -10,8 +10,8 @@ function load {
     cd Paper
     git fetch origin ver/1.12.2
     git switch -C ver/1.12.2 origin/ver/1.12.2
-    if [ -d ../patches/custom ]; then
-      find ../patches/custom -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 git am -3
+    if [ -d ../patches/paper ]; then
+      find ../patches/paper -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 git am -3
     fi
   )
   if [ ! -d Yukkit-Core ]; then
@@ -41,8 +41,8 @@ function save {
   fi
   (
     cd Paper
-    find ../patches/custom -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 rm -f
-    git format-patch -o ../patches/custom -pN --zero-commit origin/ver/1.12.2
+    find ../patches/paper -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 rm -f
+    git format-patch -o ../patches/paper -pN --zero-commit origin/ver/1.12.2
   )
   (
     cd Yukkit-API
