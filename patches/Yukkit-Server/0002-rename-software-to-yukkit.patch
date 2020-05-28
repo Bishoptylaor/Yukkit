@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: YukiLeafX <yukileafx@gmail.com>
 Date: Sun, 24 May 2020 13:09:05 +0900
-Subject: [PATCH] Rename software
+Subject: [PATCH] rename software to yukkit
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 3b982f990..da31f2582 100644
+index 3b982f99..da31f258 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1156,7 +1156,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
@@ -18,7 +18,7 @@ index 3b982f990..da31f2582 100644
  
      public CrashReport b(CrashReport crashreport) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 7c82e18b9..2e4b8fe64 100644
+index 7c82e18b..2e4b8fe6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -140,7 +140,7 @@ import javax.annotation.Nonnull; // Paper

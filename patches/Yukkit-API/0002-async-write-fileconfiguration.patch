@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: YukiLeafX <yukileafx@gmail.com>
 Date: Mon, 25 May 2020 21:18:00 +0900
-Subject: [PATCH] Async writing of FileConfiguration
+Subject: [PATCH] async write fileconfiguration
 
 
 diff --git a/src/main/java/org/bukkit/configuration/file/FileConfiguration.java b/src/main/java/org/bukkit/configuration/file/FileConfiguration.java

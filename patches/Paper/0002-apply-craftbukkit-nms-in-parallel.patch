@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: YukiLeafX <yukileafx@gmail.com>
 Date: Sun, 24 May 2020 06:23:43 +0900
-Subject: [PATCH] CraftBukkit NMS patching in parallel
+Subject: [PATCH] apply craftbukkit nms in parallel
 
 
 diff --git a/scripts/init.sh b/scripts/init.sh

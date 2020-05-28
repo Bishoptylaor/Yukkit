@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: YukiLeafX <yukileafx@gmail.com>
 Date: Sun, 24 May 2020 09:23:42 +0900
-Subject: [PATCH] Add support for Yukkit patches
+Subject: [PATCH] apply yukkit
 
 
 diff --git a/scripts/applyPatches.sh b/scripts/applyPatches.sh

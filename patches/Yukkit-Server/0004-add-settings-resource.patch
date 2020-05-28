@@ -1,12 +1,12 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: YukiLeafX <yukileafx@gmail.com>
 Date: Sat, 16 May 2020 18:41:05 +0900
-Subject: [PATCH] Add builtin settings
+Subject: [PATCH] add settings resource
 
 
 diff --git a/src/main/resources/settings/yukkit-behind-bungee.yml b/src/main/resources/settings/yukkit-behind-bungee.yml
 new file mode 100644
-index 000000000..9553cd80b
+index 00000000..9553cd80
 --- /dev/null
 +++ b/src/main/resources/settings/yukkit-behind-bungee.yml
 @@ -0,0 +1,22 @@
@@ -34,7 +34,7 @@ index 000000000..9553cd80b
 +  settings.bungeecord: true
 diff --git a/src/main/resources/settings/yukkit.yml b/src/main/resources/settings/yukkit.yml
 new file mode 100644
-index 000000000..bf7184bfe
+index 00000000..bf7184bf
 --- /dev/null
 +++ b/src/main/resources/settings/yukkit.yml
 @@ -0,0 +1,42 @@

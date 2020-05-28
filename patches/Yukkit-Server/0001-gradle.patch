@@ -1,12 +1,12 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: YukiLeafX <yukileafx@gmail.com>
 Date: Thu, 28 May 2020 22:02:15 +0900
-Subject: [PATCH] Gradle
+Subject: [PATCH] gradle
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 000000000..6b8a31855
+index 00000000..6b8a3185
 --- /dev/null
 +++ b/build.gradle.kts
 @@ -0,0 +1,47 @@
