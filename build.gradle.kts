@@ -100,12 +100,12 @@ project(":modules:Yukkit-Server") {
 
     dependencies {
         // Yukkit-Server
-        "implementation"(project(":modules:Yukkit-API", configuration = "depends"))
+        "api"(project(":modules:Yukkit-API", configuration = "depends"))
 
         // Paper
-        "implementation"("net.minecrell:terminalconsoleappender:1.1.1")
-        "runtimeOnly"("net.java.dev.jna:jna:4.5.2")
-        "implementation"("org.apache.logging.log4j:log4j-core:2.8.1")
+        "api"("net.minecrell:terminalconsoleappender:1.1.1")
+        "api"("net.java.dev.jna:jna:4.5.2")
+        "api"("org.apache.logging.log4j:log4j-core:2.8.1")
         "implementation"("org.apache.logging.log4j:log4j-iostreams:2.8.1")
         "runtimeOnly"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
         "runtimeOnly"("com.lmax:disruptor:3.4.2")
@@ -114,10 +114,10 @@ project(":modules:Yukkit-Server") {
         "implementation"("net.sf.trove4j:trove4j:3.0.3")
 
         // CraftBukkit
-        "implementation"("io.netty:netty-all:4.1.24.Final")
+        "api"("io.netty:netty-all:4.1.24.Final")
         "implementation"("org.spigotmc:minecraft-server:1.12.2-SNAPSHOT")
         "implementation"("net.sf.jopt-simple:jopt-simple:5.0.4")
-        "implementation"("jline:jline:2.12.1")
+        "api"("jline:jline:2.12.1")
         "runtimeOnly"("org.xerial:sqlite-jdbc:3.21.0.1")
         "runtimeOnly"("mysql:mysql-connector-java:5.1.45")
         "testImplementation"("junit:junit:4.12")
@@ -137,5 +137,7 @@ project(":modules:Yukkit-Server") {
             attributes["Implementation-Version"] = gitVersion
             attributes["Implementation-Vendor"] = System.currentTimeMillis()
         }
+
+        minimize()
     }
 }
