@@ -5,7 +5,7 @@ Subject: [PATCH] Add support for Yukkit patches
 
 
 diff --git a/scripts/applyPatches.sh b/scripts/applyPatches.sh
-index 14228112..38d02123 100755
+index 14228112..358003a2 100755
 --- a/scripts/applyPatches.sh
 +++ b/scripts/applyPatches.sh
 @@ -16,6 +16,7 @@ function applyPatch {
@@ -16,21 +16,19 @@ index 14228112..38d02123 100755
  
      cd "$basedir/$what"
      $gitcmd fetch
-@@ -39,12 +40,7 @@ function applyPatch {
-     $gitcmd am --abort >/dev/null 2>&1
- 
+@@ -41,9 +42,9 @@ function applyPatch {
      # Special case Windows handling because of ARG_MAX constraint
--    if [[ $windows == "true" ]]; then
--        echo "  Using workaround for Windows ARG_MAX constraint"
+     if [[ $windows == "true" ]]; then
+         echo "  Using workaround for Windows ARG_MAX constraint"
 -        find "$basedir/${what_name}-Patches/"*.patch -print0 | xargs -0 $applycmd
--    else
++        find "$patchdir/"*.patch -print0 | xargs -0 $applycmd
+     else
 -        $applycmd "$basedir/${what_name}-Patches/"*.patch
--    fi
-+    find "$patchdir" -iname '*.patch' -print0 | sort -z | xargs -0 $applycmd
++        $applycmd "$patchdir/"*.patch
+     fi
  
      if [ "$?" != "0" ]; then
-         echo "  Something did not apply cleanly to $target."
-@@ -95,4 +91,15 @@ cd "$basedir"
+@@ -95,4 +96,15 @@ cd "$basedir"
      echo "Failed to apply Paper Patches"
      exit 1
  ) || exit 1
@@ -38,8 +36,8 @@ index 14228112..38d02123 100755
 +# Apply Yukkit
 +cd "$basedir"
 +(
-+    applyPatch Paper-API ../Yukkit-API HEAD ../patches/yukkit-api &&
-+    applyPatch Paper-Server ../Yukkit-Server HEAD ../patches/yukkit-server
++    applyPatch Paper-API ../Yukkit-API HEAD ../../patches/Yukkit-API &&
++    applyPatch Paper-Server ../Yukkit-Server HEAD ../../patches/Yukkit-Server
 +) || (
 +    echo 'Failed to apply Yukkit Patches'
 +    exit 1

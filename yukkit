@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+
+set -eux
+
+paper_url=https://github.com/PaperMC/Paper.git
+paper_ref=ver/1.12.2
+paper_remote=origin
+
+fetch() {
+  (
+    if [ ! -d modules/Paper ]; then
+      git clone $paper_url modules/Paper
+    else
+      cd modules/Paper \
+        && git fetch $paper_remote $paper_ref
+    fi
+  ) || (
+    echo 'Failed to fetch from upstream. (Paper)'
+    exit 1
+  )
+}
+
+x_patch_git() {
+  local dir=${1:?} \
+    && mkdir -p "$dir" \
+    && find "$dir" -mindepth 1 -maxdepth 1 -type f -iname '*.patch' -print0 | xargs -0 git am -3
+}
+
+x_patch_paper() {
+  (
+    x_patch_paper_cleanup
+  ) && (
+    cd modules/Paper \
+      && x_patch_git ../../patches/Paper \
+      && ./paper patch
+  )
+}
+
+x_patch_paper_cleanup() {
+  (
+    cd modules/Paper \
+      && git switch -f -C ver/1.12.2 $paper_remote/$paper_ref \
+      && echo 'Cleanup success!'
+  )
+}
+
+patch() {
+  (
+    x_patch_paper
+  ) || (
+    echo 'Failed to apply Yukkit patches.'
+    exit 1
+  )
+}
+
+x_save_git() {
+  (
+    local repo=${1:?} \
+      && local ref=${2:?} \
+      && local to=${3:?} \
+      && cd "$repo" \
+      && rm -rf "$to" \
+      && mkdir -p "$to" \
+      && git format-patch -o "$to" -pN --zero-commit "$ref"
+  )
+}
+
+save() {
+  (
+    x_save_git modules/Paper $paper_remote/$paper_ref ../../patches/Paper \
+      && x_save_git modules/Yukkit-API upstream/upstream ../../patches/Yukkit-API \
+      && x_save_git modules/Yukkit-Server upstream/upstream ../../patches/Yukkit-Server
+  ) || (
+    echo 'Failed to save Yukkit patches.'
+    exit 1
+  )
+}
+
+build() {
+  ./gradlew --console=plain shadowJar
+}
+
+clip() {
+  mvn -B \
+    -f modules/Paper/work/Paperclip/pom.xml \
+    -Dmcver=1.12.2 \
+    -Dpaperjar=../../../../Yukkit-Server/build/libs/Yukkit-Server-1.12.2-R0.1-SNAPSHOT-all.jar \
+    -Dvanillajar=../../Minecraft/1.12.2/1.12.2.jar \
+    clean package \
+    && cp -v modules/Paper/work/Paperclip/assembly/target/paperclip-1.12.2.jar Yukkit.jar
+}
+
+jar() {
+  fetch
+  patch
+  build
+  clip
+}
+
+usage() {
+  echo -e "Usage >> \e[1;31m$0 [ fetch | patch | build | clip | jar | save ]\e[m"
+}
+
+case "${1-}" in
+  fetch | load | init ) fetch ;;
+  patch | apply ) patch ;;
+  build ) build ;;
+  clip ) clip ;;
+  jar ) jar ;;
+  save ) save ;;
+  *) usage ;;
+esac

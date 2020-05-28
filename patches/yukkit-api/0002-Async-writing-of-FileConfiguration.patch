@@ -5,7 +5,7 @@ Subject: [PATCH] Async writing of FileConfiguration
 
 
 diff --git a/src/main/java/org/bukkit/configuration/file/FileConfiguration.java b/src/main/java/org/bukkit/configuration/file/FileConfiguration.java
-index 6767d34a0..7f4e90807 100644
+index 6767d34a..7f4e9080 100644
 --- a/src/main/java/org/bukkit/configuration/file/FileConfiguration.java
 +++ b/src/main/java/org/bukkit/configuration/file/FileConfiguration.java
 @@ -63,17 +63,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
