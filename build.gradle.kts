@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
 import groovy.lang.Closure
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.palantir.git-version") version "0.12.3"
@@ -30,6 +31,13 @@ project(":modules:Yukkit-Core") {
     dependencies {
         "implementation"(kotlin("stdlib-jdk8"))
         "compileOnly"("com.destroystokyo.paper:paper-api:$version")
+        "implementation"("com.electronwill.night-config:toml:3.6.3")
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
     }
 
     tasks.withType<ShadowJar> {
@@ -82,6 +90,11 @@ project(":modules:Yukkit-API") {
         add("depends", tasks["shadowJar"])
     }
 
+    tasks.withType<JavaCompile> {
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
+    }
+
     tasks.withType<ShadowJar> {
         minimize()
     }
@@ -122,6 +135,11 @@ project(":modules:Yukkit-Server") {
         "runtimeOnly"("mysql:mysql-connector-java:5.1.45")
         "testImplementation"("junit:junit:4.12")
         "testImplementation"("org.hamcrest:hamcrest-library:1.3")
+    }
+
+    tasks.withType<JavaCompile> {
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
     }
 
     tasks.withType<ShadowJar> {
