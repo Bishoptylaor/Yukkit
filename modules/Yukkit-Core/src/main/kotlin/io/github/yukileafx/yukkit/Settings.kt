@@ -7,6 +7,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 import kotlin.streams.asSequence
+import org.bukkit.ChatColor as CC
 
 object Settings {
 
@@ -14,6 +15,9 @@ object Settings {
 
     private fun configWithResource(file: String, resource: String) =
             FileConfig.builder(Paths.get(file)).defaultResource(resource).build()
+
+    private fun Any.flatString() =
+            toString().replace("\n", "\\n")
 
     fun load() {
         val dir = Paths.get("settings")
@@ -47,7 +51,7 @@ object Settings {
         settings.removeIf {
             it.get<Config>("if system property")
                     ?.valueMap()
-                    ?.any { entry -> entry.value != System.getProperty(entry.key) }
+                    ?.any { entry -> entry.value.toString() != System.getProperty(entry.key) }
                     ?: false
         }
 
@@ -55,10 +59,10 @@ object Settings {
     }
 
     fun apply(name: String, action: (key: String, value: Any) -> Unit) {
-        println("${"-".repeat(16)} [ Yukkit @ $name ] ${"-".repeat(16)}")
+        println("< ${CC.GREEN}Yukkit${CC.RESET} @ ${CC.BLUE}$name${CC.RESET} >")
         settings
                 .flatMap { it.get<Config>(listOf(name))?.valueMap()?.entries ?: mutableSetOf() }
-                .onEach { entry -> println("${entry.key} = ${entry.value}") }
+                .onEach { entry -> println(" )) ${entry.key} = ${entry.value.flatString()}") }
                 .forEach { entry -> action.invoke(entry.key, entry.value) }
     }
 
