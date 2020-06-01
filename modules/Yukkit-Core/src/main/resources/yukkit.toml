@@ -23,7 +23,7 @@ motd = "§7// §aYukkit§7 //\n§f§nUser friendly and flexible Paper fork."
 'world-settings.default.entity-activation-range.tick-inactive-villagers' = false
 'world-settings.default.max-tick-time.tile' = 1000
 'world-settings.default.max-tick-time.entity' = 1000
-'world-settings.default.max-tnt-per-tick' = 10
+'world-settings.default.max-tnt-per-tick' = 200
 
 ['paper.yml']
 'settings.max-player-auto-save-per-tick' = 2
