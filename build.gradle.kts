@@ -77,7 +77,7 @@ project(":modules:Yukkit-API") {
         "implementation"("com.googlecode.json-simple:json-simple:1.1.1")
         "implementation"("com.google.guava:guava:21.0")
         "implementation"("com.google.code.gson:gson:2.8.0")
-        "implementation"("org.yaml:snakeyaml:1.19")
+        "implementation"("org.yaml:snakeyaml:1.26") // Yukkit
         "testImplementation"("junit:junit:4.12")
         "testImplementation"("org.hamcrest:hamcrest-library:1.3")
     }
@@ -96,7 +96,10 @@ project(":modules:Yukkit-API") {
     }
 
     tasks.withType<ShadowJar> {
-        minimize()
+        minimize {
+            exclude("org/junit/**/*")
+            exclude("org/hamcrest/**/*")
+        }
     }
 }
 
@@ -127,7 +130,7 @@ project(":modules:Yukkit-Server") {
         "implementation"("net.sf.trove4j:trove4j:3.0.3")
 
         // CraftBukkit
-        "api"("io.netty:netty-all:4.1.24.Final")
+        "api"("io.netty:netty-all:4.1.50.Final") // Yukkit
         "implementation"("org.spigotmc:minecraft-server:1.12.2-SNAPSHOT")
         "implementation"("net.sf.jopt-simple:jopt-simple:5.0.4")
         "api"("jline:jline:2.12.1")
@@ -156,6 +159,9 @@ project(":modules:Yukkit-Server") {
             attributes["Implementation-Vendor"] = System.currentTimeMillis()
         }
 
-        minimize()
+        minimize {
+            exclude("org/junit/**/*")
+            exclude("org/hamcrest/**/*")
+        }
     }
 }
