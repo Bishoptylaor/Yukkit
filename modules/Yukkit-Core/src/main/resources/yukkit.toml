@@ -1,0 +1,34 @@
+weight = 0
+
+['system property']
+'com.mojang.eula.agree' = true
+'yukkit.suppress-recipe-warning' = "com.shampaggon.crackshot.CSMinion.customRecipes"
+
+['server.properties']
+view-distance = 7
+max-players = 2020
+motd = "§7// §aYukkit§7 //\n§f§nUser friendly and flexible Paper fork."
+
+['bukkit.yml']
+'settings.world-container' = "worlds"
+'chunk-gc.period-in-ticks' = 300
+'chunk-gc.load-threshold' = 300
+
+['spigot.yml']
+'settings.save-user-cache-on-stop-only' = true
+'world-settings.default.entity-activation-range.animals' = 8
+'world-settings.default.entity-activation-range.monsters' = 24
+'world-settings.default.entity-activation-range.water' = 4
+'world-settings.default.entity-activation-range.misc' = 2
+'world-settings.default.entity-activation-range.tick-inactive-villagers' = false
+'world-settings.default.max-tick-time.tile' = 1000
+'world-settings.default.max-tick-time.entity' = 1000
+'world-settings.default.max-tnt-per-tick' = 10
+
+['paper.yml']
+'settings.max-player-auto-save-per-tick' = 2
+'world-settings.default.max-auto-save-chunks-per-tick' = 6
+'world-settings.default.hopper.disable-move-event' = true
+'world-settings.default.prevent-moving-into-unloaded-chunks' = true
+'world-settings.default.optimize-explosions' = true
+'world-settings.default.armor-stands-tick' = false

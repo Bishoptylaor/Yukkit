@@ -1,0 +1,93 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Mon, 1 Jun 2020 17:02:59 +0900
+Subject: [PATCH] Don't save the default configuration files.
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/PaperConfig.java b/src/main/java/com/destroystokyo/paper/PaperConfig.java
+index d8b0a8688..85c645280 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperConfig.java
++++ b/src/main/java/com/destroystokyo/paper/PaperConfig.java
+@@ -107,7 +107,7 @@ public class PaperConfig {
+         }
+ 
+         try {
+-            config.save(CONFIG_FILE);
++            io.github.yukileafx.yukkit.Yukkit.INSTANCE.fakeWrite(); // Yukkit
+         } catch (IOException ex) {
+             Bukkit.getLogger().log(Level.SEVERE, "Could not save " + CONFIG_FILE, ex);
+         }
+diff --git a/src/main/java/net/minecraft/server/PropertyManager.java b/src/main/java/net/minecraft/server/PropertyManager.java
+index 5055a4fb8..33c6b1677 100644
+--- a/src/main/java/net/minecraft/server/PropertyManager.java
++++ b/src/main/java/net/minecraft/server/PropertyManager.java
+@@ -77,8 +77,7 @@ public class PropertyManager {
+             }
+             // CraftBukkit end
+ 
+-            fileoutputstream = new FileOutputStream(this.file);
+-            this.properties.store(fileoutputstream, "Minecraft server properties");
++            io.github.yukileafx.yukkit.Yukkit.INSTANCE.fakeWrite(); // Yukkit
+         } catch (Exception exception) {
+             PropertyManager.a.warn("Failed to save {}", this.file, exception);
+             this.a();
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 2e4b8fe64..b6f0db187 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -295,7 +295,7 @@ public final class CraftServer implements Server {
+ 
+     private void saveConfig() {
+         try {
+-            configuration.save(getConfigFile());
++            io.github.yukileafx.yukkit.Yukkit.INSTANCE.fakeWrite(); // Yukkit
+         } catch (IOException ex) {
+             Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, "Could not save " + getConfigFile(), ex);
+         }
+@@ -303,7 +303,7 @@ public final class CraftServer implements Server {
+ 
+     private void saveCommandsConfig() {
+         try {
+-            commandsConfiguration.save(getCommandsConfigFile());
++            io.github.yukileafx.yukkit.Yukkit.INSTANCE.fakeWrite(); // Yukkit
+         } catch (IOException ex) {
+             Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, "Could not save " + getCommandsConfigFile(), ex);
+         }
+@@ -834,7 +834,7 @@ public final class CraftServer implements Server {
+             stream = new FileInputStream(file);
+         } catch (FileNotFoundException ex) {
+             try {
+-                file.createNewFile();
++                io.github.yukileafx.yukkit.Yukkit.INSTANCE.fakeWrite(); // Yukkit
+             } finally {
+                 return;
+             }
+diff --git a/src/main/java/org/bukkit/craftbukkit/help/HelpYamlReader.java b/src/main/java/org/bukkit/craftbukkit/help/HelpYamlReader.java
+index 60a6221b4..11d6acd57 100644
+--- a/src/main/java/org/bukkit/craftbukkit/help/HelpYamlReader.java
++++ b/src/main/java/org/bukkit/craftbukkit/help/HelpYamlReader.java
+@@ -37,7 +37,7 @@ public class HelpYamlReader {
+ 
+             try {
+                 if (!helpYamlFile.exists()) {
+-                    helpYaml.save(helpYamlFile);
++                    io.github.yukileafx.yukkit.Yukkit.INSTANCE.fakeWrite(); // Yukkit
+                 }
+             } catch (IOException ex) {
+                 server.getLogger().log(Level.SEVERE, "Could not save " + helpYamlFile, ex);
+diff --git a/src/main/java/org/spigotmc/SpigotConfig.java b/src/main/java/org/spigotmc/SpigotConfig.java
+index 2cdd9aaf8..108733722 100644
+--- a/src/main/java/org/spigotmc/SpigotConfig.java
++++ b/src/main/java/org/spigotmc/SpigotConfig.java
+@@ -123,7 +123,7 @@ public class SpigotConfig
+ 
+         try
+         {
+-            config.save( CONFIG_FILE );
++            io.github.yukileafx.yukkit.Yukkit.INSTANCE.fakeWrite(); // Yukkit
+         } catch ( IOException ex )
+         {
+             Bukkit.getLogger().log( Level.SEVERE, "Could not save " + CONFIG_FILE, ex );
+-- 
+2.26.2.windows.1
+

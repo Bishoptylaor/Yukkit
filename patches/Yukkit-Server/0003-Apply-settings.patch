@@ -1,0 +1,70 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Mon, 1 Jun 2020 17:24:20 +0900
+Subject: [PATCH] Apply settings
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/PaperConfig.java b/src/main/java/com/destroystokyo/paper/PaperConfig.java
+index 85c645280..e91d85e08 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperConfig.java
++++ b/src/main/java/com/destroystokyo/paper/PaperConfig.java
+@@ -57,6 +57,7 @@ public class PaperConfig {
+             Bukkit.getLogger().log(Level.SEVERE, "Could not load paper.yml, please correct your syntax errors", ex);
+             throw Throwables.propagate(ex);
+         }
++        io.github.yukileafx.yukkit.Settings.INSTANCE.applyYaml("paper.yml", config); // Yukkit
+         config.options().header(HEADER);
+         config.options().copyDefaults(true);
+         verbose = getBoolean("verbose", false);
+diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
+index 6a8292ce4..24c39b83f 100644
+--- a/src/main/java/net/minecraft/server/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/DedicatedServer.java
+@@ -67,6 +67,11 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+     }
+ 
+     public boolean init() throws IOException { // CraftBukkit - decompile error
++        // Yukkit start
++        io.github.yukileafx.yukkit.Settings.INSTANCE.load();
++        io.github.yukileafx.yukkit.Settings.INSTANCE.applyFlags();
++        // Yukkit end
++
+         Thread thread = new Thread("Server console handler") {
+             public void run() {
+                 // CraftBukkit start
+@@ -155,6 +160,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+             this.r.b();
+             return false;
+         } else {
++            io.github.yukileafx.yukkit.Settings.INSTANCE.applyProperties("server.properties", propertyManager.properties); // Yukkit
++
+             if (this.R()) {
+                 this.c("127.0.0.1");
+             } else {
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index b6f0db187..89fa60c56 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -217,6 +217,7 @@ public final class CraftServer implements Server {
+         }
+ 
+         configuration = YamlConfiguration.loadConfiguration(getConfigFile());
++        io.github.yukileafx.yukkit.Settings.INSTANCE.applyYaml("bukkit.yml", configuration); // Yukkit
+         configuration.options().copyDefaults(true);
+         configuration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("configurations/bukkit.yml"), Charsets.UTF_8)));
+         ConfigurationSection legacyAlias = null;
+diff --git a/src/main/java/org/spigotmc/SpigotConfig.java b/src/main/java/org/spigotmc/SpigotConfig.java
+index 108733722..f190a0c0a 100644
+--- a/src/main/java/org/spigotmc/SpigotConfig.java
++++ b/src/main/java/org/spigotmc/SpigotConfig.java
+@@ -64,6 +64,7 @@ public class SpigotConfig
+             Bukkit.getLogger().log( Level.SEVERE, "Could not load spigot.yml, please correct your syntax errors", ex );
+             throw Throwables.propagate( ex );
+         }
++        io.github.yukileafx.yukkit.Settings.INSTANCE.applyYaml("spigot.yml", config); // Yukkit
+ 
+         config.options().header( HEADER );
+         config.options().copyDefaults( true );
+-- 
+2.26.2.windows.1
+

@@ -31,7 +31,7 @@ project(":modules:Yukkit-Core") {
     dependencies {
         "implementation"(kotlin("stdlib-jdk8"))
         "compileOnly"("com.destroystokyo.paper:paper-api:$version")
-        "implementation"("com.electronwill.night-config:toml:3.6.3")
+        "api"("com.electronwill.night-config:toml:3.6.3")
     }
 
     tasks.withType<KotlinCompile> {
