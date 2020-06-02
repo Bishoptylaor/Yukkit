@@ -5,7 +5,7 @@ Subject: [PATCH] Rename software to Yukkit
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 3b982f990..da31f2582 100644
+index 6d32d96ce..37b50dae7 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1156,7 +1156,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs

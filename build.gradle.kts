@@ -78,14 +78,14 @@ project(":modules:Yukkit-API") {
         "implementation"("org.slf4j:slf4j-api:1.7.25")
 
         // Spigot-API
-        "api"("net.md-5:bungeecord-chat:1.12-SNAPSHOT")
+        "api"("net.md-5:bungeecord-chat:1.12-SNAPSHOT") // Yukkit
 
         // Bukkit
-        "implementation"("commons-lang:commons-lang:2.6")
+        "api"("commons-lang:commons-lang:2.6") // Yukkit
         "implementation"("com.googlecode.json-simple:json-simple:1.1.1")
-        "implementation"("com.google.guava:guava:21.0")
+        "api"("com.google.guava:guava:29.0-jre") // Yukkit
         "implementation"("com.google.code.gson:gson:2.8.0")
-        "implementation"("org.yaml:snakeyaml:1.26") // Yukkit
+        "api"("org.yaml:snakeyaml:1.26") // Yukkit
         "testImplementation"("junit:junit:4.12")
         "testImplementation"("org.hamcrest:hamcrest-library:1.3")
     }
@@ -130,9 +130,9 @@ project(":modules:Yukkit-Server") {
         "api"(project(":modules:Yukkit-API", configuration = "depends"))
 
         // Paper
-        "api"("net.minecrell:terminalconsoleappender:1.1.1")
-        "api"("net.java.dev.jna:jna:4.5.2")
-        "api"("org.apache.logging.log4j:log4j-core:2.8.1")
+        "api"("net.minecrell:terminalconsoleappender:1.1.1") // Yukkit
+        "api"("net.java.dev.jna:jna:4.5.2") // Yukkit
+        "api"("org.apache.logging.log4j:log4j-core:2.8.1") // Yukkit
         "implementation"("org.apache.logging.log4j:log4j-iostreams:2.8.1")
         "runtimeOnly"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
         "runtimeOnly"("com.lmax:disruptor:3.4.2")
@@ -144,7 +144,7 @@ project(":modules:Yukkit-Server") {
         "api"("io.netty:netty-all:4.1.50.Final") // Yukkit
         "implementation"("org.spigotmc:minecraft-server:1.12.2-SNAPSHOT")
         "implementation"("net.sf.jopt-simple:jopt-simple:5.0.4")
-        "api"("jline:jline:2.12.1")
+        "api"("jline:jline:2.12.1") // Yukkit
         "runtimeOnly"("org.xerial:sqlite-jdbc:3.21.0.1")
         "runtimeOnly"("mysql:mysql-connector-java:5.1.45")
         "testImplementation"("junit:junit:4.12")

@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Tue, 2 Jun 2020 23:13:00 +0900
+Subject: [PATCH] Guava fixes
+
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 3b982f990..6d32d96ce 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1617,7 +1617,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
+             try {
+                 return Futures.immediateFuture(callable.call());
+             } catch (Exception exception) {
+-                return Futures.immediateFailedCheckedFuture(exception);
++                return Futures.immediateFailedFuture(exception);
+             }
+         }
+     }
+-- 
+2.26.2.windows.1
+
