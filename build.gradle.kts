@@ -40,6 +40,14 @@ project(":modules:Yukkit-Core") {
         }
     }
 
+    tasks.withType<ProcessResources> {
+        filesMatching("**/version.properties") {
+            filter {
+                it.replace("@version", version.toString())
+            }
+        }
+    }
+
     tasks.withType<ShadowJar> {
         minimize()
     }
@@ -93,13 +101,16 @@ project(":modules:Yukkit-API") {
     tasks.withType<JavaCompile> {
         sourceCompatibility = "1.8"
         targetCompatibility = "1.8"
+        options.encoding = "UTF-8"
     }
 
     tasks.withType<ShadowJar> {
-        minimize {
-            exclude("org/junit/**/*")
-            exclude("org/hamcrest/**/*")
+        dependencies {
+            exclude(dependency("junit:junit:.*"))
+            exclude(dependency("org.hamcrest:hamcrest-library:.*"))
         }
+
+        minimize()
     }
 }
 
@@ -143,6 +154,7 @@ project(":modules:Yukkit-Server") {
     tasks.withType<JavaCompile> {
         sourceCompatibility = "1.8"
         targetCompatibility = "1.8"
+        options.encoding = "UTF-8"
     }
 
     tasks.withType<ShadowJar> {
@@ -156,12 +168,13 @@ project(":modules:Yukkit-Server") {
             attributes["Main-Class"] = "org.bukkit.craftbukkit.v1_12_R1.Main"
             attributes["Implementation-Title"] = "CraftBukkit"
             attributes["Implementation-Version"] = gitVersion
-            attributes["Implementation-Vendor"] = System.currentTimeMillis()
         }
 
-        minimize {
-            exclude("org/junit/**/*")
-            exclude("org/hamcrest/**/*")
+        dependencies {
+            exclude(dependency("junit:junit:.*"))
+            exclude(dependency("org.hamcrest:hamcrest-library:.*"))
         }
+
+        minimize()
     }
 }
