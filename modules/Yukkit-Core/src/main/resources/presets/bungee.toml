@@ -1,0 +1,16 @@
+weight = 1
+
+['if system property']
+bungee = true
+
+['server.properties']
+# (https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation)
+online-mode = false
+
+['bukkit.yml']
+# (https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation)
+'settings.connection-throttle' = -1
+
+['spigot.yml']
+# (https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation)
+'settings.bungeecord' = true

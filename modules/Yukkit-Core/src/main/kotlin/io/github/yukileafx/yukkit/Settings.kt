@@ -25,8 +25,8 @@ object Settings {
         Files.createDirectories(dir)
 
         val resourceSeq = sequenceOf(
-                configWithResource("settings/yukkit.toml", "/yukkit.toml"),
-                configWithResource("settings/bungee.toml", "/bungee.toml")
+                configWithResource("settings/yukkit.toml", "/presets/yukkit.toml"),
+                configWithResource("settings/bungee.toml", "/presets/bungee.toml")
         )
 
         val fileSeq = Files.list(dir)
