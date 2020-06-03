@@ -146,7 +146,7 @@ project(":modules:Yukkit-Server") {
         "implementation"("net.sf.jopt-simple:jopt-simple:5.0.4")
         "api"("jline:jline:2.12.1") // Yukkit
         "api"("org.xerial:sqlite-jdbc:3.21.0.1") // Yukkit
-        "api"("mysql:mysql-connector-java:5.1.45") // Yukkit
+        "runtimeOnly"("mysql:mysql-connector-java:5.1.45")
         "testImplementation"("junit:junit:4.12")
         "testImplementation"("org.hamcrest:hamcrest-library:1.3")
     }
