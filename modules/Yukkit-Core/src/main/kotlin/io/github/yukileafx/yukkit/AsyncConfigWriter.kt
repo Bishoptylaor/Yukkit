@@ -4,11 +4,12 @@ import org.bukkit.Bukkit
 import org.bukkit.configuration.file.FileConfiguration
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.Executors
 import java.util.logging.Level
 
 object AsyncConfigWriter {
 
-    private val executor = Yukkit.newSingleExecutor(AsyncConfigWriter::class.simpleName!!)
+    private val executor = Executors.newSingleThreadExecutor { r -> Thread(r, AsyncConfigWriter::class.simpleName) }
 
     fun write(file: File, config: FileConfiguration) {
         executor.submit {
