@@ -1,36 +1,32 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: YukiLeafX <yukileafx@gmail.com>
 Date: Thu, 28 May 2020 03:53:46 +0900
-Subject: [PATCH] Suppress recipe warning option
+Subject: [PATCH] Suppress recipe warning
 
 
 diff --git a/src/main/java/org/bukkit/inventory/ShapedRecipe.java b/src/main/java/org/bukkit/inventory/ShapedRecipe.java
-index d7fa6d28..849764e9 100644
+index d7fa6d28..fd94c926 100644
 --- a/src/main/java/org/bukkit/inventory/ShapedRecipe.java
 +++ b/src/main/java/org/bukkit/inventory/ShapedRecipe.java
-@@ -23,7 +23,9 @@ public class ShapedRecipe implements Recipe, Keyed {
+@@ -23,7 +23,7 @@ public class ShapedRecipe implements Recipe, Keyed {
      @Deprecated
      public ShapedRecipe(ItemStack result) {
          this.key = NamespacedKey.randomKey();
 -        new Throwable("Warning: A plugin is creating a recipe using a Deprecated method. This will cause you to receive warnings stating 'Tried to load unrecognized recipe: bukkit:<ID>'. Please ask the author to give their recipe a static key using NamespacedKey.").printStackTrace();
-+        if (!Boolean.getBoolean("yukkit.disable-recipe-warnings")) {
-+            new Throwable("Warning: A plugin is creating a recipe using a Deprecated method. This will cause you to receive warnings stating 'Tried to load unrecognized recipe: bukkit:<ID>'. Please ask the author to give their recipe a static key using NamespacedKey.").printStackTrace();
-+        }
++        new io.github.yukileafx.yukkit.SuppressibleRecipeWarning("Warning: A plugin is creating a recipe using a Deprecated method. This will cause you to receive warnings stating 'Tried to load unrecognized recipe: bukkit:<ID>'. Please ask the author to give their recipe a static key using NamespacedKey.").printStackTrace(); // Yukkit
          this.output = new ItemStack(result);
      }
  
 diff --git a/src/main/java/org/bukkit/inventory/ShapelessRecipe.java b/src/main/java/org/bukkit/inventory/ShapelessRecipe.java
-index f2dd46f2..c8c3b607 100644
+index f2dd46f2..1c36b08e 100644
 --- a/src/main/java/org/bukkit/inventory/ShapelessRecipe.java
 +++ b/src/main/java/org/bukkit/inventory/ShapelessRecipe.java
-@@ -23,7 +23,9 @@ public class ShapelessRecipe implements Recipe, Keyed {
+@@ -23,7 +23,7 @@ public class ShapelessRecipe implements Recipe, Keyed {
      @Deprecated
      public ShapelessRecipe(ItemStack result) {
          this.key = NamespacedKey.randomKey();
 -        new Throwable("Warning: A plugin is creating a recipe using a Deprecated method. This will cause you to receive warnings stating 'Tried to load unrecognized recipe: bukkit:<ID>'. Please ask the author to give their recipe a static key using NamespacedKey.").printStackTrace();
-+        if (!Boolean.getBoolean("yukkit.disable-recipe-warnings")) {
-+            new Throwable("Warning: A plugin is creating a recipe using a Deprecated method. This will cause you to receive warnings stating 'Tried to load unrecognized recipe: bukkit:<ID>'. Please ask the author to give their recipe a static key using NamespacedKey.").printStackTrace();
-+        }
++        new io.github.yukileafx.yukkit.SuppressibleRecipeWarning("Warning: A plugin is creating a recipe using a Deprecated method. This will cause you to receive warnings stating 'Tried to load unrecognized recipe: bukkit:<ID>'. Please ask the author to give their recipe a static key using NamespacedKey.").printStackTrace(); // Yukkit
          this.output = new ItemStack(result);
      }
  
