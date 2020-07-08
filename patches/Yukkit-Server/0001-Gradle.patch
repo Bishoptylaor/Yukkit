@@ -6,11 +6,10 @@ Subject: [PATCH] Gradle
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 000000000..2f471582e
+index 000000000..c3985eda5
 --- /dev/null
 +++ b/build.gradle.kts
-@@ -0,0 +1,68 @@
-+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+@@ -0,0 +1,69 @@
 +import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
 +
 +plugins {
@@ -28,7 +27,7 @@ index 000000000..2f471582e
 +
 +dependencies {
 +    // Yukkit-Server
-+    api(project(":modules:Yukkit-API"))
++    api(project(":modules:Yukkit-API", configuration = "api-all"))
 +
 +    // Paper
 +    implementation("org.apache.logging.log4j:log4j-iostreams:2.8.1")
@@ -54,29 +53,31 @@ index 000000000..2f471582e
 +    api("jline:jline:2.12.1")
 +}
 +
-+tasks.withType<JavaCompile> {
-+    options.encoding = "UTF-8"
-+}
++tasks {
++    javadoc { options.encoding = "UTF-8" }
++    compileJava { options.encoding = "UTF-8" }
++    compileTestJava { options.encoding = "UTF-8" }
 +
-+tasks.withType<ShadowJar> {
-+    transform(Log4j2PluginsCacheFileTransformer())
++    shadowJar {
++        transform(Log4j2PluginsCacheFileTransformer())
 +
-+    relocate("jline", "org.bukkit.craftbukkit.libs.jline")
-+    relocate("org.bukkit.craftbukkit", "org.bukkit.craftbukkit.v1_12_R1")
-+    relocate("net.minecraft.server", "net.minecraft.server.v1_12_R1")
++        relocate("jline", "org.bukkit.craftbukkit.libs.jline")
++        relocate("org.bukkit.craftbukkit", "org.bukkit.craftbukkit.v1_12_R1")
++        relocate("net.minecraft.server", "net.minecraft.server.v1_12_R1")
 +
-+    manifest {
-+        attributes["Main-Class"] = "org.bukkit.craftbukkit.v1_12_R1.Main"
-+        attributes["Implementation-Title"] = "CraftBukkit"
-+        attributes["Implementation-Version"] = ext["softwareVersion"]
++        manifest {
++            attributes["Main-Class"] = "org.bukkit.craftbukkit.v1_12_R1.Main"
++            attributes["Implementation-Title"] = "CraftBukkit"
++            attributes["Implementation-Version"] = ext["softwareVersion"]
++        }
++
++        dependencies {
++            exclude(dependency("junit:junit:.*"))
++            exclude(dependency("org.hamcrest:hamcrest-library:.*"))
++        }
++
++        minimize()
 +    }
-+
-+    dependencies {
-+        exclude(dependency("junit:junit:.*"))
-+        exclude(dependency("org.hamcrest:hamcrest-library:.*"))
-+    }
-+
-+    minimize()
 +}
 -- 
 2.27.0.windows.1
