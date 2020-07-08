@@ -1,0 +1,83 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Wed, 8 Jul 2020 08:29:19 +0900
+Subject: [PATCH] Gradle
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+new file mode 100644
+index 00000000..20ddf184
+--- /dev/null
++++ b/build.gradle.kts
+@@ -0,0 +1,68 @@
++import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
++import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
++
++plugins {
++    kotlin("jvm") version "1.3.72"
++    id("com.github.johnrengelman.shadow") version "6.0.0"
++}
++
++repositories {
++    mavenCentral()
++    maven("https://hub.spigotmc.org/nexus/content/groups/public/")
++    maven("https://papermc.io/repo/repository/maven-public/")
++    maven("https://oss.sonatype.org/content/groups/public/")
++}
++
++dependencies {
++    // Yukkit-API
++    implementation(kotlin("stdlib-jdk8"))
++    api("com.electronwill.night-config:toml:3.6.3")
++
++    // Paper-API
++    implementation("com.google.code.findbugs:jsr305:1.3.9")
++    implementation("org.ow2.asm:asm:6.1.1")
++    implementation("org.ow2.asm:asm-commons:6.1.1")
++    implementation("com.mojang:authlib:1.5.25")
++    implementation("org.slf4j:slf4j-api:1.7.25")
++    compileOnly("net.sf.trove4j:trove4j:3.0.3")
++    compileOnly("co.aikar:fastutil-lite:1.0")
++
++    // Spigot-API
++    api("net.md-5:bungeecord-chat:1.12-SNAPSHOT") // all include
++
++    // Bukkit
++    implementation("com.google.code.gson:gson:2.8.0")
++    api("com.googlecode.json-simple:json-simple:1.1.1") // all include
++    api("commons-lang:commons-lang:2.6") // all include
++    api("com.google.guava:guava:29.0-jre") // all include & 21.0 -> 29.0-jre
++    api("org.yaml:snakeyaml:1.26") // all include & 1.19 -> 1.26
++    testImplementation("junit:junit:4.12")
++    testImplementation("org.hamcrest:hamcrest-library:1.3")
++}
++
++tasks.withType<JavaCompile> {
++    options.encoding = "UTF-8"
++}
++
++tasks.withType<KotlinCompile> {
++    kotlinOptions {
++        jvmTarget = "1.8"
++    }
++}
++
++tasks.withType<ProcessResources> {
++    filesMatching("**/version.properties") {
++        filter {
++            it.replace("@version", version.toString())
++        }
++    }
++}
++
++tasks.withType<ShadowJar> {
++    dependencies {
++        exclude(dependency("junit:junit:.*"))
++        exclude(dependency("org.hamcrest:hamcrest-library:.*"))
++    }
++
++    minimize()
++}
+-- 
+2.27.0.windows.1
+

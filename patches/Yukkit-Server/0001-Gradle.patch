@@ -1,0 +1,83 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Wed, 8 Jul 2020 09:45:59 +0900
+Subject: [PATCH] Gradle
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+new file mode 100644
+index 000000000..2f471582e
+--- /dev/null
++++ b/build.gradle.kts
+@@ -0,0 +1,68 @@
++import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
++import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
++
++plugins {
++    `java-library`
++    id("com.github.johnrengelman.shadow") version "6.0.0"
++}
++
++repositories {
++    mavenLocal()
++
++    mavenCentral()
++    maven("https://hub.spigotmc.org/nexus/content/groups/public/")
++    maven("https://papermc.io/repo/repository/maven-public/")
++}
++
++dependencies {
++    // Yukkit-Server
++    api(project(":modules:Yukkit-API"))
++
++    // Paper
++    implementation("org.apache.logging.log4j:log4j-iostreams:2.8.1")
++    runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
++    runtimeOnly("com.lmax:disruptor:3.4.2")
++    api("net.java.dev.jna:jna:4.5.2") // *all include
++    api("net.minecrell:terminalconsoleappender:1.1.1") // all include
++    api("org.apache.logging.log4j:log4j-core:2.8.1") // all include
++
++    // Spigot
++    implementation("net.sf.trove4j:trove4j:3.0.3")
++
++    // CraftBukkit
++    implementation("org.spigotmc:minecraft-server:1.12.2-SNAPSHOT")
++    implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
++    api("io.netty:netty-all:4.1.50.Final") // all include & 4.1.24.Final -> 4.1.50.Final
++    api("org.xerial:sqlite-jdbc:3.21.0.1") // *all include
++    api("mysql:mysql-connector-java:5.1.45") // *all include
++    testImplementation("junit:junit:4.12")
++    testImplementation("org.hamcrest:hamcrest-library:1.3")
++
++    // Yukkit fixes
++    api("jline:jline:2.12.1")
++}
++
++tasks.withType<JavaCompile> {
++    options.encoding = "UTF-8"
++}
++
++tasks.withType<ShadowJar> {
++    transform(Log4j2PluginsCacheFileTransformer())
++
++    relocate("jline", "org.bukkit.craftbukkit.libs.jline")
++    relocate("org.bukkit.craftbukkit", "org.bukkit.craftbukkit.v1_12_R1")
++    relocate("net.minecraft.server", "net.minecraft.server.v1_12_R1")
++
++    manifest {
++        attributes["Main-Class"] = "org.bukkit.craftbukkit.v1_12_R1.Main"
++        attributes["Implementation-Title"] = "CraftBukkit"
++        attributes["Implementation-Version"] = ext["softwareVersion"]
++    }
++
++    dependencies {
++        exclude(dependency("junit:junit:.*"))
++        exclude(dependency("org.hamcrest:hamcrest-library:.*"))
++    }
++
++    minimize()
++}
+-- 
+2.27.0.windows.1
+

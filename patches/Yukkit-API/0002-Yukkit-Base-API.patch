@@ -1,0 +1,265 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: YukiLeafX <yukileafx@gmail.com>
+Date: Wed, 8 Jul 2020 08:31:29 +0900
+Subject: [PATCH] Yukkit Base API
+
+
+diff --git a/src/main/kotlin/io/github/yukileafx/yukkit/AsyncConfigWriter.kt b/src/main/kotlin/io/github/yukileafx/yukkit/AsyncConfigWriter.kt
+new file mode 100644
+index 00000000..b6493b30
+--- /dev/null
++++ b/src/main/kotlin/io/github/yukileafx/yukkit/AsyncConfigWriter.kt
+@@ -0,0 +1,28 @@
++package io.github.yukileafx.yukkit
++
++import org.bukkit.Bukkit
++import org.bukkit.configuration.file.FileConfiguration
++import java.io.File
++import java.io.IOException
++import java.util.concurrent.Executors
++import java.util.logging.Level
++
++object AsyncConfigWriter {
++
++    private val executor = Executors.newSingleThreadExecutor { r -> Thread(r, AsyncConfigWriter::class.simpleName) }
++
++    fun write(file: File, config: FileConfiguration) {
++        executor.submit {
++            val data = config.saveToString()
++            kotlin.runCatching {
++                file.canonicalFile.parentFile
++                        .also { it.mkdirs() }
++                        .takeIf { it.isDirectory }
++                        ?: throw IOException("Unable to create parent directories.")
++                file.writeText(data)
++            }.onFailure { e ->
++                Bukkit.getLogger().log(Level.SEVERE, "An error occurred while writing to $file.", e)
++            }
++        }
++    }
++}
+diff --git a/src/main/kotlin/io/github/yukileafx/yukkit/Settings.kt b/src/main/kotlin/io/github/yukileafx/yukkit/Settings.kt
+new file mode 100644
+index 00000000..7c0646ef
+--- /dev/null
++++ b/src/main/kotlin/io/github/yukileafx/yukkit/Settings.kt
+@@ -0,0 +1,80 @@
++package io.github.yukileafx.yukkit
++
++import com.electronwill.nightconfig.core.Config
++import com.electronwill.nightconfig.core.file.FileConfig
++import org.bukkit.configuration.file.YamlConfiguration
++import java.nio.file.Files
++import java.nio.file.Paths
++import java.util.*
++import kotlin.streams.asSequence
++import org.bukkit.ChatColor as CC
++
++object Settings {
++
++    private val settings = mutableListOf<FileConfig>()
++
++    private fun configWithResource(file: String, resource: String) =
++            FileConfig.builder(Paths.get(file)).defaultResource(resource).build()
++
++    private fun Any.flatString() =
++            toString().replace("\n", "\\n")
++
++    fun load() {
++        val dir = Paths.get("settings")
++
++        Files.createDirectories(dir)
++
++        val resourceSeq = sequenceOf(
++                configWithResource("settings/yukkit.toml", "/presets/yukkit.toml"),
++                configWithResource("settings/bungee.toml", "/presets/bungee.toml")
++        )
++
++        val fileSeq = Files.list(dir)
++                .map { kotlin.runCatching { FileConfig.of(it) }.getOrNull() }
++                .asSequence()
++                .filterNotNull()
++
++        (resourceSeq + fileSeq)
++                .distinctBy { it.nioPath }
++                .onEach { println("Yukkit >> Loading ${it.nioPath}...") }
++                .onEach { it.load() }
++                .forEach { settings += it }
++
++        loadAfter()
++    }
++
++    private fun loadAfter() {
++        println("Yukkit >> Sorting settings...")
++        settings.sortBy { it.getIntOrElse("weight", 0) }
++
++        println("Yukkit >> Disabling unnecessary settings...")
++        settings.removeIf {
++            it.get<Config>("if system property")
++                    ?.valueMap()
++                    ?.any { entry -> entry.value.toString() != System.getProperty(entry.key) }
++                    ?: false
++        }
++
++        settings.onEach { println("Yukkit >> Loaded ${it.nioPath}") }
++    }
++
++    fun apply(name: String, action: (key: String, value: Any) -> Unit) {
++        println("< ${CC.GREEN}Yukkit${CC.RESET} @ ${CC.BLUE}$name${CC.RESET} >")
++        settings
++                .flatMap { it.get<Config>(listOf(name))?.valueMap()?.entries ?: mutableSetOf() }
++                .onEach { entry -> println(" )) ${entry.key} = ${entry.value.flatString()}") }
++                .forEach { entry -> action.invoke(entry.key, entry.value) }
++    }
++
++    fun applyFlags() {
++        apply("system property") { key, value -> System.setProperty(key, value.toString()) }
++    }
++
++    fun applyYaml(name: String, yaml: YamlConfiguration) {
++        apply(name) { key, value -> yaml.set(key, value) }
++    }
++
++    fun applyProperties(name: String, prop: Properties) {
++        apply(name) { key, value -> prop.setProperty(key, value.toString()) }
++    }
++}
+diff --git a/src/main/kotlin/io/github/yukileafx/yukkit/SuppressibleRecipeWarning.kt b/src/main/kotlin/io/github/yukileafx/yukkit/SuppressibleRecipeWarning.kt
+new file mode 100644
+index 00000000..14cf53a0
+--- /dev/null
++++ b/src/main/kotlin/io/github/yukileafx/yukkit/SuppressibleRecipeWarning.kt
+@@ -0,0 +1,14 @@
++package io.github.yukileafx.yukkit
++
++class SuppressibleRecipeWarning(msg: String) {
++
++    private val thrown = Throwable(msg)
++
++    fun printStackTrace() {
++        val trace = Thread.currentThread().stackTrace
++        val opts = System.getProperty("yukkit.suppress-recipe-warning")?.split(",")
++        if (opts?.none { method -> trace.any { method == "${it.className}.${it.methodName}" } } != false) {
++            thrown.printStackTrace()
++        }
++    }
++}
+diff --git a/src/main/kotlin/io/github/yukileafx/yukkit/Yukkit.kt b/src/main/kotlin/io/github/yukileafx/yukkit/Yukkit.kt
+new file mode 100644
+index 00000000..87e9da5e
+--- /dev/null
++++ b/src/main/kotlin/io/github/yukileafx/yukkit/Yukkit.kt
+@@ -0,0 +1,10 @@
++package io.github.yukileafx.yukkit
++
++import java.io.IOException
++
++object Yukkit {
++
++    @Throws(IOException::class)
++    fun fakeWrite() {
++    }
++}
+diff --git a/src/main/resources/presets/bungee.toml b/src/main/resources/presets/bungee.toml
+new file mode 100644
+index 00000000..0b58569a
+--- /dev/null
++++ b/src/main/resources/presets/bungee.toml
+@@ -0,0 +1,16 @@
++weight = 1
++
++['if system property']
++bungee = true
++
++['server.properties']
++# (https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation)
++online-mode = false
++
++['bukkit.yml']
++# (https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation)
++'settings.connection-throttle' = -1
++
++['spigot.yml']
++# (https://www.spigotmc.org/wiki/bungeecord-installation/#post-installation)
++'settings.bungeecord' = true
+diff --git a/src/main/resources/presets/yukkit.toml b/src/main/resources/presets/yukkit.toml
+new file mode 100644
+index 00000000..da21bfaf
+--- /dev/null
++++ b/src/main/resources/presets/yukkit.toml
+@@ -0,0 +1,65 @@
++weight = 0
++
++['system property']
++# (https://account.mojang.com/documents/minecraft_eula)
++'com.mojang.eula.agree' = true
++# (https://github.com/PaperMC/Paper/issues/895#issuecomment-353785832)
++'paper.playerconnection.keepalive' = 60
++# Yukkit
++'yukkit.suppress-recipe-warning' = "com.shampaggon.crackshot.CSMinion.customRecipes"
++
++['server.properties']
++# (https://www.spigotmc.org/threads/guide-server-optimization%E2%9A%A1.283181/)
++view-distance = 7
++# Yukkit
++max-players = 2020
++# Yukkit
++motd = "\u00a77// \u00a7aYukkit\u00a77 //\n\u00a7f\u00a7nUser friendly and flexible Paper fork."
++
++['bukkit.yml']
++# (https://www.spigotmc.org/threads/is-there-a-way-to-save-worlds-in-a-separate-folder.336336/#post-3132682)
++'settings.world-container' = "worlds"
++# (https://www.spigotmc.org/wiki/reducing-lag/)
++'chunk-gc.period-in-ticks' = 300
++# (https://www.spigotmc.org/wiki/reducing-lag/)
++'chunk-gc.load-threshold' = 300
++
++['spigot.yml']
++# (https://www.spigotmc.org/threads/guide-server-optimization%E2%9A%A1.283181/)
++'settings.save-user-cache-on-stop-only' = true
++# (https://www.spigotmc.org/wiki/reducing-lag/)
++'world-settings.default.entity-activation-range.animals' = 8
++# (https://www.spigotmc.org/wiki/reducing-lag/)
++'world-settings.default.entity-activation-range.monsters' = 24
++# (https://www.spigotmc.org/wiki/reducing-lag/)
++'world-settings.default.entity-activation-range.misc' = 2
++# Yukkit
++'world-settings.default.entity-activation-range.water' = 4
++# (https://www.spigotmc.org/threads/guide-server-optimization%E2%9A%A1.283181/)
++'world-settings.default.entity-activation-range.tick-inactive-villagers' = false
++# (https://aikar.co/2015/10/08/spigot-tick-limiter-dont-use-max-tick-time/)
++'world-settings.default.max-tick-time.tile' = 1000
++# (https://aikar.co/2015/10/08/spigot-tick-limiter-dont-use-max-tick-time/)
++'world-settings.default.max-tick-time.entity' = 1000
++# (https://www.reddit.com/r/admincraft/comments/freod9/spigotpaper_if_you_have_players_who_use_tnt/)
++'world-settings.default.max-tnt-per-tick' = 500
++# (https://stackoverflow.com/a/30371225)
++'settings.netty-threads' = 12
++
++['paper.yml']
++# Yukkit
++'settings.max-player-auto-save-per-tick' = 2
++# (https://www.spigotmc.org/threads/guide-server-optimization%E2%9A%A1.283181/)
++'world-settings.default.max-auto-save-chunks-per-tick' = 6
++# (https://www.spigotmc.org/threads/guide-server-optimization%E2%9A%A1.283181/)
++'world-settings.default.hopper.disable-move-event' = true
++# (https://www.spigotmc.org/threads/guide-server-optimization%E2%9A%A1.283181/)
++'world-settings.default.prevent-moving-into-unloaded-chunks' = true
++# (https://www.spigotmc.org/threads/guide-server-optimization%E2%9A%A1.283181/)
++'world-settings.default.optimize-explosions' = true
++# (https://www.spigotmc.org/threads/guide-server-optimization%E2%9A%A1.283181/)
++'world-settings.default.armor-stands-tick' = false
++# (https://github.com/PaperMC/Paper/issues/674#issuecomment-357852383)
++'world-settings.default.max-chunk-sends-per-tick' = 20
++# Yukkit
++'world-settings.default.max-chunk-gens-per-tick' = 2
+diff --git a/src/main/resources/version.properties b/src/main/resources/version.properties
+new file mode 100644
+index 00000000..6528135a
+--- /dev/null
++++ b/src/main/resources/version.properties
+@@ -0,0 +1 @@
++version=@version
+-- 
+2.27.0.windows.1
+
