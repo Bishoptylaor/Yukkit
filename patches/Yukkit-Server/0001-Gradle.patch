@@ -6,7 +6,7 @@ Subject: [PATCH] Gradle
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 000000000..c3985eda5
+index 000000000..9b7050b38
 --- /dev/null
 +++ b/build.gradle.kts
 @@ -0,0 +1,69 @@
@@ -30,12 +30,12 @@ index 000000000..c3985eda5
 +    api(project(":modules:Yukkit-API", configuration = "api-all"))
 +
 +    // Paper
-+    implementation("org.apache.logging.log4j:log4j-iostreams:2.8.1")
-+    runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
++    implementation("org.apache.logging.log4j:log4j-iostreams:2.8.2") // 2.8.1 -> 2.8.2
++    runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.8.2") // 2.8.1 -> 2.8.2
 +    runtimeOnly("com.lmax:disruptor:3.4.2")
-+    api("net.java.dev.jna:jna:4.5.2") // *all include
++    api("net.java.dev.jna:jna:5.5.0") // *all include & 4.5.2 -> 5.5.0
 +    api("net.minecrell:terminalconsoleappender:1.1.1") // all include
-+    api("org.apache.logging.log4j:log4j-core:2.8.1") // all include
++    api("org.apache.logging.log4j:log4j-core:2.8.2") // all include & 2.8.1 -> 2.8.2
 +
 +    // Spigot
 +    implementation("net.sf.trove4j:trove4j:3.0.3")
@@ -44,13 +44,13 @@ index 000000000..c3985eda5
 +    implementation("org.spigotmc:minecraft-server:1.12.2-SNAPSHOT")
 +    implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
 +    api("io.netty:netty-all:4.1.50.Final") // all include & 4.1.24.Final -> 4.1.50.Final
-+    api("org.xerial:sqlite-jdbc:3.21.0.1") // *all include
-+    api("mysql:mysql-connector-java:5.1.45") // *all include
++    api("org.xerial:sqlite-jdbc:3.32.3") // *all include & 3.21.0.1 -> 3.32.3
++    api("mysql:mysql-connector-java:8.0.20") // *all include & 5.1.45 -> 8.0.20
 +    testImplementation("junit:junit:4.12")
 +    testImplementation("org.hamcrest:hamcrest-library:1.3")
 +
 +    // Yukkit fixes
-+    api("jline:jline:2.12.1")
++    api("jline:jline:2.14.6") // 2.12.1 -> 2.14.6
 +}
 +
 +tasks {
