@@ -6,7 +6,7 @@ Subject: [PATCH] Gradle
 
 diff --git a/build.gradle.kts b/build.gradle.kts
 new file mode 100644
-index 000000000..9b7050b38
+index 000000000..8347b2d7a
 --- /dev/null
 +++ b/build.gradle.kts
 @@ -0,0 +1,69 @@
@@ -30,12 +30,12 @@ index 000000000..9b7050b38
 +    api(project(":modules:Yukkit-API", configuration = "api-all"))
 +
 +    // Paper
-+    implementation("org.apache.logging.log4j:log4j-iostreams:2.8.2") // 2.8.1 -> 2.8.2
-+    runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.8.2") // 2.8.1 -> 2.8.2
++    implementation("org.apache.logging.log4j:log4j-iostreams:2.8.2") // from 2.8.1
++    runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.8.2") // from 2.8.1
 +    runtimeOnly("com.lmax:disruptor:3.4.2")
-+    api("net.java.dev.jna:jna:5.5.0") // *all include & 4.5.2 -> 5.5.0
++    api("net.java.dev.jna:jna:5.6.0") // *all include & from 4.5.2
 +    api("net.minecrell:terminalconsoleappender:1.1.1") // all include
-+    api("org.apache.logging.log4j:log4j-core:2.8.2") // all include & 2.8.1 -> 2.8.2
++    api("org.apache.logging.log4j:log4j-core:2.8.2") // all include & from 2.8.1
 +
 +    // Spigot
 +    implementation("net.sf.trove4j:trove4j:3.0.3")
@@ -43,14 +43,14 @@ index 000000000..9b7050b38
 +    // CraftBukkit
 +    implementation("org.spigotmc:minecraft-server:1.12.2-SNAPSHOT")
 +    implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
-+    api("io.netty:netty-all:4.1.50.Final") // all include & 4.1.24.Final -> 4.1.50.Final
-+    api("org.xerial:sqlite-jdbc:3.32.3") // *all include & 3.21.0.1 -> 3.32.3
-+    api("mysql:mysql-connector-java:8.0.20") // *all include & 5.1.45 -> 8.0.20
++    api("io.netty:netty-all:4.1.51.Final") // all include & from 4.1.24.Final
++    api("org.xerial:sqlite-jdbc:3.32.3.1") // *all include & from 3.21.0.1
++    api("mysql:mysql-connector-java:8.0.21") // *all include & from 5.1.45
 +    testImplementation("junit:junit:4.12")
 +    testImplementation("org.hamcrest:hamcrest-library:1.3")
 +
 +    // Yukkit fixes
-+    api("jline:jline:2.14.6") // 2.12.1 -> 2.14.6
++    api("jline:jline:2.14.6") // from 2.12.1
 +}
 +
 +tasks {
